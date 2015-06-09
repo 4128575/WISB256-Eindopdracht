@@ -34,10 +34,10 @@ class Punt(object):
     def __add__(self,other):
         slope=(other.y-self.y)/(other.x-self.x)
         p=(slope**2)/3
-        r=(self.kromme.a-2*self.y*slope)/3
-        q=p**3+((2*self.y*slope-self.kromme.a)*(slope**2)-3*(self.kromme.b-self.y**2))/6
+        r=(self.kromme.a-2*slope*(self.y-slope*self.x))/3
+        q=p**3+((2*slope*(self.y-slope*self.x)-self.kromme.a)*(slope**2)-3*(self.kromme.b-(self.y-slope*self.x)**2))/6
         xcoor=(q+math.sqrt(q**2+(r-p**2)**3))**(1/3)+(q-math.sqrt(q**2+(r-p**2)**3))**(1/3)+p
-        ycoor=self.y+slope*xcoor
+        ycoor=self.y+slope*(xcoor-self.x)
         return Punt(self.kromme, xcoor, -ycoor)
         
 
