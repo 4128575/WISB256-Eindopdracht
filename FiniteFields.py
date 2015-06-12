@@ -14,6 +14,9 @@ def IntegersModP(p):
         
         def __neg__(self): 
             return IntegerModP(-self.n)
+
+        def __repr__(self): 
+            return '%d (mod %d)' % (self.n, self.p)
         
         def __str__(self): 
             return str(self.n)
@@ -35,9 +38,6 @@ def IntegersModP(p):
         
         def __abs__(self): 
             return abs(self.n)
-        
-        def __repr__(self): 
-            return '%d (mod %d)' % (self.n, self.p)
             
         def __divmod__(self, div):
             geheel=divmod(self.n,div.n)[0]
@@ -49,7 +49,7 @@ def IntegersModP(p):
             if gcd != 1:
                 return None  # modular inverse does not exist
             else:
-                return x % self.p
+                return IntegerModP(x % self.p)
 
         def __truediv__(self, other): 
             return self * other.modinverse()
