@@ -106,6 +106,10 @@ def mult_oneterm(poly,c,i):
     return newlijst
 
 def multiply(lijst1,lijst2):
+    """
+    Function that returns the coefficients of the polynomial resulting from multiplying
+    two polynomials.
+    """
     if len(lijst1) > len(lijst2): 
         shortlijst=lijst2
         longlijst=lijst1
