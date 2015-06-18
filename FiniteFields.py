@@ -210,18 +210,3 @@ fun4=pol3([1,4,5])
 #print(fun1==fun2,fun1==fun3,fun1==fun4)
 print(fun1+fun3,"   ",fun1+fun2,"   ",fun3+fun4)
 print(fun3*fun3,"   ",fun1*fun3,"   ",fun4*fun4)
-
-"""
-Oude code die ik even wil bewaren:
-            newcoeffic=[]
-            if self.degree()>=other.degree():
-                for i in range(len(self.coefficients)):
-                    newcoeffic.append(self.coefficients[i])
-                for i in range(len(other.coefficients)):
-                    newcoeffic[i]=newcoeffic[i]+other.coefficients[i]
-            else:
-                for i in range(len(other.coefficients)):
-                    newcoeffic.append(other.coefficients[i])
-                for i in range(len(self.coefficients)):
-                    newcoeffic[i]=newcoeffic[i]+self.coefficients[i]
-"""
