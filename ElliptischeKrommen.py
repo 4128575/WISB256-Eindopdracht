@@ -7,6 +7,7 @@ class ElliptischeKromme(object):
         self.a = a
         self.b = b
         self.check = -16 * (4 * a**3 + 27 * b**2)
+        self.discriminant=4 * a**3 + 27 * b**2
         if self.check == 0:
             raise Exception("The curve %s is not smooth!" % self)
             
@@ -21,7 +22,7 @@ class Punt(object):
         self.kromme = kromme # the curve containing this point
         self.x = x
         self.y = y
-        if y**2!=x**3+self.kromme.a*x+self.kromme.b:
+        if x**3+self.kromme.a*x+self.kromme.b-y**2>1.0e-5:
             raise Exception("The point %s is not on the given curve %s" % (self, kromme))
     
     def __str__(self):
@@ -107,8 +108,8 @@ class InfPoint(Punt):
 #puntgoed=Punt(curvegoed,1,2)
 #puntfout=Punt(curvegoed,1,1)
 
-testkromme = ElliptischeKromme(frac(-2),frac(4))
-testp1 = Punt(testkromme, frac(3), frac(5))
-testp2 = Punt(testkromme, frac(-2), frac(0))
-print(testp2+testp1,testp2+testp2,testp1+testp1+testp1)
-print(testp1-testp2,testp1+testp1+testp1+testp1+testp1,testp1*5,5*testp1,testp2-3*testp1)
+#testkromme = ElliptischeKromme(frac(-2),frac(4))
+#testp1 = Punt(testkromme, frac(3), frac(5))
+#testp2 = Punt(testkromme, frac(-2), frac(0))
+#print(testp2+testp1,testp2+testp2,testp1+testp1+testp1)
+#print(testp1-testp2,testp1+testp1+testp1+testp1+testp1,testp1*5,5*testp1,testp2-3*testp1)

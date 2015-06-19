@@ -298,20 +298,20 @@ def PolynomialSpaceOver(field=frac):
     Polynomial.__name__ = '(%s)[x]' % field.__name__
     return Polynomial
 
-pol3=PolynomialSpaceOver()
-fun1=pol3([1,2,3])
-fun2=pol3([1,2,3])
-fun3=pol3([1,2])
-fun4=pol3([1,4,5])
-fun5=pol3([1,4,4])
+#pol3=PolynomialSpaceOver()
+#fun1=pol3([1,2,3])
+#fun2=pol3([1,2,3])
+#fun3=pol3([1,2])
+#fun4=pol3([1,4,5])
+#fun5=pol3([1,4,4])
 #print(fun1==fun2,fun1==fun3,fun1==fun4)
 #print(fun1+fun3,"   ",fun1+fun2,"   ",fun3+fun4)
 #print(fun3*fun3,"   ",fun1*fun3,"   ",fun4*fun4)
 
-testdiv1=[1,2]
-testdiv2=[2,3,2]
-testdiv3=[4,5,1,2]
-testdiv4=[8]
+#testdiv1=[1,2]
+#testdiv2=[2,3,2]
+#testdiv3=[4,5,1,2]
+#testdiv4=[8]
 #print(longdiv(testdiv2,testdiv1),"   ",longdiv(testdiv3,testdiv1),"   ",longdiv(testdiv3,testdiv2),"   ",longdiv(testdiv3,testdiv4))
 #print(divmod(fun1,fun3),"   ",longdiv([1,2,3],[1,2]))
 #print(fun1/fun2,"   ",fun5/fun3)
