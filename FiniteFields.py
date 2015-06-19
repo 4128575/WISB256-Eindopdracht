@@ -141,7 +141,7 @@ def longdiv(lijst1,lijst2):
     removezeroes(remainder)
     quotient=[0]
     a=0
-    while remainder!=[0] and len(remainder)>=len(quotient) and a<2:
+    while remainder!=[0] and len(remainder)>=len(quotient) and a<1:
         a+=1
         for i in range(len(lijst2)-len(quotient)):
             quotient.append(0)
@@ -254,4 +254,5 @@ testdiv1=[1,2]
 testdiv2=[2,3,2]
 testdiv3=[4,5,1,2]
 testdiv4=[8]
-print(longdiv(testdiv2,testdiv1),"   ",longdiv(testdiv3,testdiv1),"   ",longdiv(testdiv3,testdiv2),"   ",longdiv(testdiv3,testdiv4))
+print(longdiv(testdiv3,testdiv1))
+#,"   ",longdiv(testdiv3,testdiv1),"   ",longdiv(testdiv3,testdiv2),"   ",longdiv(testdiv3,testdiv4))
