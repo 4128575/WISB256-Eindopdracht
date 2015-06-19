@@ -121,6 +121,42 @@ def multiply(lijst1,lijst2):
         newlijst = addlist(newlijst, mult_oneterm(longlijst, shortlijst[i], i))
     return newlijst
 
+def removezeroes(poly):
+    """
+    Removes the unnecessary zeroes at the end of a list of coefficients.
+    """
+    while poly and poly[-1] == 0:
+        poly.pop()
+    if poly == []:
+        poly.append(0)
+
+def longdiv(lijst1,lijst2):
+    """
+    Algorithm that performs long division for polynomials once. See wikipedia for the pseudo code.
+    The input is a tuple of two lists.
+    """
+    if len(lijst1)<len(lijst2):
+        return [0], lijst1
+    remainder=[i for i in lijst1]
+    removezeroes(remainder)
+    quotient=[0]
+    a=0
+    while remainder!=[0] and len(remainder)>=len(quotient) and a<2:
+        a+=1
+        for i in range(len(lijst2)-len(quotient)):
+            quotient.append(0)
+        t=remainder[-1]/lijst2[-1]
+        power=len(remainder)-len(lijst2)
+        quotient[power]=quotient[power]+t
+        subtract=[i for i in lijst2]
+        for i in range(power):
+            subtract.insert(0,0)
+        for i in range(len(remainder)):
+            remainder[i]=remainder[i]-subtract[i]
+        removezeroes(remainder)
+        removezeroes(quotient)
+    return quotient, remainder
+
 def PolynomialSpace(field=frac):
     class Polynomial(object):
         def __init__(self,coefficients):
@@ -196,6 +232,9 @@ def PolynomialSpace(field=frac):
         
         def __rmul__(self, other):
             return self*other
+        
+        def __divmod__(self, other):
+            return "lol"
             
     def ZeroPol():
         return Polynomial([])
@@ -208,5 +247,11 @@ fun2=pol3([1,2,3])
 fun3=pol3([1,2])
 fun4=pol3([1,4,5])
 #print(fun1==fun2,fun1==fun3,fun1==fun4)
-print(fun1+fun3,"   ",fun1+fun2,"   ",fun3+fun4)
-print(fun3*fun3,"   ",fun1*fun3,"   ",fun4*fun4)
+#print(fun1+fun3,"   ",fun1+fun2,"   ",fun3+fun4)
+#print(fun3*fun3,"   ",fun1*fun3,"   ",fun4*fun4)
+
+testdiv1=[1,2]
+testdiv2=[2,3,2]
+testdiv3=[4,5,1,2]
+testdiv4=[8]
+print(longdiv(testdiv2,testdiv1),"   ",longdiv(testdiv3,testdiv1),"   ",longdiv(testdiv3,testdiv2),"   ",longdiv(testdiv3,testdiv4))
