@@ -125,8 +125,10 @@ def removezeroes(poly):
     """
     Removes the unnecessary zeroes at the end of a list of coefficients.
     """
-    while poly and poly[-1] == 0:
+    while poly[-1]==0 and len(poly)>0:
         poly.pop()
+        if len(poly)==0:
+            break
     if poly == []:
         poly.append(0)
 
@@ -140,10 +142,8 @@ def longdiv(lijst1,lijst2):
     remainder=[i for i in lijst1]
     removezeroes(remainder)
     quotient=[0]
-    a=0
-    while remainder!=[0] and len(remainder)>=len(quotient) and a<1:
-        a+=1
-        for i in range(len(lijst2)-len(quotient)):
+    while remainder!=[0] and len(remainder)>=len(lijst2):
+        for i in range(len(lijst1)-len(quotient)):
             quotient.append(0)
         t=remainder[-1]/lijst2[-1]
         power=len(remainder)-len(lijst2)
@@ -152,12 +152,12 @@ def longdiv(lijst1,lijst2):
         for i in range(power):
             subtract.insert(0,0)
         for i in range(len(remainder)):
-            remainder[i]=remainder[i]-subtract[i]
+            remainder[i]=remainder[i]-t*subtract[i]
         removezeroes(remainder)
         removezeroes(quotient)
     return quotient, remainder
 
-def PolynomialSpace(field=frac):
+def PolynomialSpaceOver(field=frac):
     class Polynomial(object):
         def __init__(self,coefficients):
             self.coefficients=coefficients
@@ -234,18 +234,42 @@ def PolynomialSpace(field=frac):
             return self*other
         
         def __divmod__(self, other):
-            return "lol"
+            listtuple=longdiv(self.coefficients,other.coefficients)
+            return listtuple[0], listtuple[1]
+        
+        def __truediv__(self, other): 
+            quotient, remainder = divmod(self,other)
+            if remainder==[0]:
+                return Polynomial(quotient)
+            else:
+                raise Exception("The polynomial %s is not divisible by %s!" % (self,other))
+
+        def __rtruediv__(self, other): 
+            quotient, remainder = divmod(other,self)
+            if remainder==[0]:
+                return Polynomial(quotient)
+            else:
+                raise Exception("The polynomial %s is not divisible by %s!" % (other,self))
+            
+        def __div__(self, other): 
+            return self.__truediv__(other)
+
+        def __rdiv__(self, other): 
+            return self.__rtruediv__(other)
             
     def ZeroPol():
         return Polynomial([])
-      
+    
+    Polynomial.field = field
+    Polynomial.__name__ = '(%s)[x]' % field.__name__
     return Polynomial
 
-pol3=PolynomialSpace()
+pol3=PolynomialSpaceOver()
 fun1=pol3([1,2,3])
 fun2=pol3([1,2,3])
 fun3=pol3([1,2])
 fun4=pol3([1,4,5])
+fun5=pol3([1,4,4])
 #print(fun1==fun2,fun1==fun3,fun1==fun4)
 #print(fun1+fun3,"   ",fun1+fun2,"   ",fun3+fun4)
 #print(fun3*fun3,"   ",fun1*fun3,"   ",fun4*fun4)
@@ -254,5 +278,14 @@ testdiv1=[1,2]
 testdiv2=[2,3,2]
 testdiv3=[4,5,1,2]
 testdiv4=[8]
-print(longdiv(testdiv3,testdiv1))
-#,"   ",longdiv(testdiv3,testdiv1),"   ",longdiv(testdiv3,testdiv2),"   ",longdiv(testdiv3,testdiv4))
+#print(longdiv(testdiv2,testdiv1),"   ",longdiv(testdiv3,testdiv1),"   ",longdiv(testdiv3,testdiv2),"   ",longdiv(testdiv3,testdiv4))
+#print(divmod(fun1,fun3),"   ",longdiv([1,2,3],[1,2]))
+#print(fun1/fun2,"   ",fun5/fun3)
+
+Mod5 = IntegersModP(5)
+polysMod5 = PolynomialSpaceOver(Mod5)
+Mod11 = IntegersModP(11)
+polysMod11 = PolynomialSpaceOver(Mod11)
+print(pol3([1,7,49]) / pol3([7]))
+print(polysMod5([1,7,49]) / polysMod5([7]))
+print(polysMod11([1,7,49]) / polysMod11([7]))
