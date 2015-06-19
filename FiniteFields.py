@@ -43,7 +43,19 @@ def IntegersModP(p):
         def __rmul__(self, other):
             return self*other
         
-        def __eq__(self, other): 
+        def __eq__(self, other):
+            if isinstance(other, int):
+                tempint=IntegerModP(other)
+                if self.n==tempint.n and isinstance(tempint, IntegerModP)==True:
+                    return True
+                else:
+                    return False
+            if isinstance(self, int):
+                tempint=IntegerModP(self)
+                if self.n==tempint.n and isinstance(tempint, IntegerModP)==True:
+                    return True
+                else:
+                    return False
             if self.n==other.n and isinstance(other, IntegerModP)==True:
                 return True
             else:
@@ -75,6 +87,26 @@ def IntegersModP(p):
 
         def __rdiv__(self, other): 
             return self.__rtruediv__(other)
+        
+        def __mod__(self, other):
+            if isinstance(other, int):
+                tempint=IntegerModP(other)
+                return IntegerModP(self.n % tempint.n)
+            return IntegerModP(self.n % other.n)
+        
+        def __rmod__(self, other):
+            if isinstance(other, int):
+                tempint=IntegerModP(other)
+                return IntegerModP(tempint.n % self.n)
+            return IntegerModP(other.n % self.n)
+        
+        def __gt__(self, other):
+            if isinstance(other, int):
+                tempint=IntegerModP(other)
+                return self.n>tempint.n
+            return self.n>other.n
+                    
+            
 
     IntegerModP.p = p
     IntegerModP.__name__ = 'Z/%d' % (p)
@@ -159,6 +191,8 @@ def longdiv(lijst1,lijst2):
 
 def PolynomialSpaceOver(field=frac):
     class Polynomial(object):
+        factory = lambda L: Polynomial([field(x) for x in L])
+        
         def __init__(self,coefficients):
             self.coefficients=coefficients
             
@@ -282,10 +316,15 @@ testdiv4=[8]
 #print(divmod(fun1,fun3),"   ",longdiv([1,2,3],[1,2]))
 #print(fun1/fun2,"   ",fun5/fun3)
 
+"""
+PolyOverQ=PolynomialSpaceOver().factory
 Mod5 = IntegersModP(5)
-polysMod5 = PolynomialSpaceOver(Mod5)
+polysMod5 = PolynomialSpaceOver(Mod5).factory
 Mod11 = IntegersModP(11)
-polysMod11 = PolynomialSpaceOver(Mod11)
+polysMod11 = PolynomialSpaceOver(Mod11).factory
 print(pol3([1,7,49]) / pol3([7]))
+print(PolyOverQ([1,7,49]) / PolyOverQ([7]))
+print(polysMod5([1,6,2,4,7,1]))
 print(polysMod5([1,7,49]) / polysMod5([7]))
 print(polysMod11([1,7,49]) / polysMod11([7]))
+"""
