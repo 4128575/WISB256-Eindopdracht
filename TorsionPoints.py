@@ -63,23 +63,20 @@ def FindTorsionPoints(kromme):
     torsiepunten=[]
     for punt in punten:
         rekenpunt=Punt(kromme,punt[0],punt[1])
-        if 12*rekenpunt==InfPoint(kromme):
+        if isinstance((12*rekenpunt),InfPoint):
             torsiepunten.append(rekenpunt)
         else:
             for i in [5,7,8,9]:
-                if i*rekenpunt==InfPoint(kromme):
+                if isinstance((i*rekenpunt),InfPoint):
                     torsiepunten.append(rekenpunt)
                     break
     for punt in orde2lijst:
         torsiepunten.append(punt)
     torsiepunten.append(InfPoint(kromme))
-#    testpunt=Punt(kromme,punten[0][0],punten[0][1])
-#    nplijst=[i*testpunt for i in range(2,11)]
-#    nplijst.append(12*testpunt)
     return torsiepunten
 
-testkromme = ElliptischeKromme(0,1)
+testkromme = ElliptischeKromme(-43,166)
 a=FindTorsionPoints(testkromme)
-#for i in range(len(a[0])):
-#    print(a[0][i])
-print(a[0])
+print(a)
+for i in range(len(a)):
+    print(a[i])
