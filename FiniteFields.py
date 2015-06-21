@@ -357,34 +357,64 @@ def genIrreduciblePoly(mod, degree):
       if Reducible(randomMonicPolynomial, mod):
          return randomMonicPolynomial
 
-
+def FiniteField(prime, degree, irreducible=None):
+    ModP=IntegersModP(prime)
+    if degree==1:
+        return ModP
+    Polynomial=PolynomialSpaceOver(ModP)
+    if irreducible==None:
+        irreducible=genIrreduciblePoly(prime, degree)
+    
+    class FieldElement(object):
+        cardinality=prime**degree
+        def __init__(self,polynomial):
+            if isinstance(polynomial,Polynomial):
+                self.poly=polynomial % irreducible
+            if isinstance(polynomial,int) or isinstance(polynomial,ModP):
+                self.poly = Polynomial([ModP(poly)])
+            else:
+                self.poly = Polynomial([ModP(x) for x in polynomial]) % irreducible
+        
+        def __add__(self, other): 
+            return FieldElement(self.poly + other.poly)
+      
+        def __sub__(self, other): 
+            return FieldElement(self.poly - other.poly)
+      
+        def __mul__(self, other): 
+            return FieldElement(self.poly * other.poly)
+      
+        def __eq__(self, other):
+            if isinstance(other, FieldElement) and self.poly == other.poly:
+                return True
+            return False
+        
+        def __neg__(self): 
+            return FieldElement(-self.poly)
+        
+        def __abs__(self): 
+            return abs(self.poly)
+        
+        def __repr__(self): 
+            return repr(self.poly) + ' \u2208 ' + self.__class__.__name__
+            
+        def __divmod__(self, other):
+            q,r = divmod(self.poly, other.poly)
+            return FieldElement(q), FieldElement(r)
+    p, m = prime, degree
+    FieldElement.__name__ = 'F_(%d^%d)' % (p,m)
+    return FieldElement
+                
 pol3=PolynomialSpaceOver()
 PolyOverQ=PolynomialSpaceOver().factory
 Mod5 = IntegersModP(5)
 polysMod5 = PolynomialSpaceOver(Mod5).factory
 Mod11 = IntegersModP(11)
 polysMod11 = PolynomialSpaceOver(Mod11).factory
-#print(pol3([1,7,49]) / pol3([7]))
-#print(PolyOverQ([1,7,49]) / PolyOverQ([7]))
-#print(polysMod5([1,6,2,4,7,1]))
-#print(polysMod5([1,7,49]) / polysMod5([7]))
-#print(polysMod11([1,7,49]) / polysMod11([7]))
 
-#c=PolyOverQ([1,4,4])
-#d=PolyOverQ([1,2])
-#print(gcdpol(c,d))
-#print(Reducible(polysMod5([1,7,49]),5))
-
-Mod23 = IntegersModP(23)
-coefficients = [Mod23(random.randint(0, 23-1)) for _ in range(3)]
-randomMonicPolynomial = PolynomialSpaceOver(Mod23)(coefficients + [Mod23(1)])
-#print(randomMonicPolynomial)
-#print(Reducible(randomMonicPolynomial, 23))
-
-print(genIrreduciblePoly(23, 3))
-
-
-
+F23 = FiniteField(2,3)
+x = F23([1,1])
+print(x)
 """
 fun1=pol3([1,2,3])
 fun2=pol3([1,2,3])
@@ -403,4 +433,22 @@ fun5=pol3([1,4,4])
 #print(longdiv(testdiv2,testdiv1),"   ",longdiv(testdiv3,testdiv1),"   ",longdiv(testdiv3,testdiv2),"   ",longdiv(testdiv3,testdiv4))
 #print(divmod(fun1,fun3),"   ",longdiv([1,2,3],[1,2]))
 #print(fun1/fun2,"   ",fun5/fun3)
+
+print(pol3([1,7,49]) / pol3([7]))
+print(PolyOverQ([1,7,49]) / PolyOverQ([7]))
+print(polysMod5([1,6,2,4,7,1]))
+print(polysMod5([1,7,49]) / polysMod5([7]))
+print(polysMod11([1,7,49]) / polysMod11([7]))
+
+c=PolyOverQ([1,4,4])
+d=PolyOverQ([1,2])
+print(gcdpol(c,d))
+print(Reducible(polysMod5([1,7,49]),5))
+
+Mod23 = IntegersModP(23)
+coefficients = [Mod23(random.randint(0, 23-1)) for _ in range(3)]
+randomMonicPolynomial = PolynomialSpaceOver(Mod23)(coefficients + [Mod23(1)])
+print(randomMonicPolynomial)
+print(Reducible(randomMonicPolynomial, 23))
+print(genIrreduciblePoly(23, 3))
 """
