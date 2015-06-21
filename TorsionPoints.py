@@ -37,8 +37,8 @@ def FindTorsionPoints(kromme):
     """
     xopl=[]
     for x in Cardano(kromme.a,kromme.b):
-        if abs(x-int(x))<1.0e-7:
-            xopl.append(int(x))
+        if abs(x-round(x))<1.0e-7:
+            xopl.append(round(x))
     orde2lijst=[Punt(kromme,xw,0) for xw in xopl]
     """
     Nu vinden we y ongelijk aan nul in Z zodat y^2|D.
@@ -55,8 +55,8 @@ def FindTorsionPoints(kromme):
     for y in ylijst:
         xwaarden=[]
         for x in Cardano(kromme.a,kromme.b-y**2):
-            if abs(x-int(x))<1.0e-7:
-                xwaarden.append(int(x))
+            if abs(x-round(x))<1.0e-7:
+                xwaarden.append(round(x))
         for x in xwaarden:
             punten.append([x,y])
             punten.append([x,-y])
