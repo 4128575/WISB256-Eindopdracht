@@ -6,6 +6,21 @@ def Cardano(a,b):
     """
     functie die de reële oplossingen van x^3+a*x+b=0 geeft.
     """
+    if a==0:
+        if b==0:
+            return [0]
+        else:
+            x1=(-b)**(1/3)
+            x2=((-1)**(1/3))*(b)**(1/3)
+            x3=-((-1)**(2/3))*(b)**(1/3)
+            filtered = [i.real for i in [x1,x2,x3] if abs(i.imag) < 1.0e-5]
+            return filtered
+    if b==0:
+        x1=0
+        x2=(-a)**(1/2)
+        x3=-(-a)**(1/2)
+        filtered = [i.real for i in [x1,x2,x3] if abs(i.imag) < 1.0e-5]
+        return filtered
     R=-b/2
     Q=a/3
     K1=(R+(R**2+Q**3)**(1/2))**(1/3)
@@ -23,7 +38,7 @@ def FindTorsionPoints(kromme):
     xopl=[]
     for x in Cardano(kromme.a,kromme.b):
         if abs(x-int(x))<1.0e-7:
-            xopl.append(x)
+            xopl.append(int(x))
     orde2lijst=[Punt(kromme,xw,0) for xw in xopl]
     """
     Nu vinden we y ongelijk aan nul in Z zodat y^2|D.
@@ -38,7 +53,10 @@ def FindTorsionPoints(kromme):
     """
     punten=[]
     for y in ylijst:
-        xwaarden=Cardano(kromme.a,kromme.b-y**2)
+        xwaarden=[]
+        for x in Cardano(kromme.a,kromme.b-y**2):
+            if abs(x-int(x))<1.0e-7:
+                xwaarden.append(int(x))
         for x in xwaarden:
             punten.append([x,y])
             punten.append([x,-y])
@@ -60,7 +78,7 @@ def FindTorsionPoints(kromme):
 #    nplijst.append(12*testpunt)
     return torsiepunten
 
-testkromme = ElliptischeKromme(frac(2),frac(4))
+testkromme = ElliptischeKromme(0,1)
 a=FindTorsionPoints(testkromme)
 #for i in range(len(a[0])):
 #    print(a[0][i])
