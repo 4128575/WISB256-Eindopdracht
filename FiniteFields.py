@@ -1,5 +1,7 @@
 import math
 import fractions
+import random
+from ElliptischeKrommen import *
 frac = fractions.Fraction
 
 def egcd(a, b):
@@ -11,8 +13,12 @@ def egcd(a, b):
 
 def IntegersModP(p):
     class IntegerModP(object):
+#            self.n = n % p
         def __init__(self, n):
-            self.n = n % p
+            try:
+                self.n = int(n) % IntegerModP.p
+            except:
+                raise TypeError("Can't cast type %s to %s in __init__" % (type(n).__name__, type(self).__name__))
             self.field = IntegerModP
             self.p=p
         
@@ -26,6 +32,9 @@ def IntegersModP(p):
             return str(self.n)
         
         def __add__(self, other):
+            if isinstance(other, int):
+                tempint=IntegerModP(other)
+                return IntegerModP(self.n + tempint.n)
             return IntegerModP(self.n + other.n)
             
         def __radd__(self, other):
@@ -38,6 +47,9 @@ def IntegersModP(p):
             return (-self)+other
  
         def __mul__(self, other): 
+            if isinstance(other, int):
+                tempint=IntegerModP(other)
+                return IntegerModP(self.n * tempint.n)
             return IntegerModP(self.n * other.n)
             
         def __rmul__(self, other):
@@ -77,9 +89,15 @@ def IntegersModP(p):
                 return IntegerModP(x % self.p)
 
         def __truediv__(self, other): 
+            if isinstance(other, int):
+                tempint=IntegerModP(other)
+                return self * tempint.modinverse()
             return self * other.modinverse()
 
         def __rtruediv__(self, other): 
+            if isinstance(other, int):
+                tempint=IntegerModP(other)
+                return self.modinverse() * tempint
             return self.modinverse() * other
             
         def __div__(self, other): 
@@ -105,8 +123,12 @@ def IntegersModP(p):
                 tempint=IntegerModP(other)
                 return self.n>tempint.n
             return self.n>other.n
-                    
-            
+
+        def __ge__(self, other):
+            if isinstance(other, int):
+                tempint=IntegerModP(other)
+                return self.n>=tempint.n
+            return self.n>=other.n
 
     IntegerModP.p = p
     IntegerModP.__name__ = 'Z/%d' % (p)
@@ -271,6 +293,10 @@ def PolynomialSpaceOver(field=frac):
             listtuple=longdiv(self.coefficients,other.coefficients)
             return listtuple[0], listtuple[1]
         
+        def __mod__(self,other):
+            quotient, remainder = divmod(self,other)
+            return Polynomial(remainder)
+        
         def __truediv__(self, other): 
             quotient, remainder = divmod(self,other)
             if remainder==[0]:
@@ -298,12 +324,74 @@ def PolynomialSpaceOver(field=frac):
     Polynomial.__name__ = '(%s)[x]' % field.__name__
     return Polynomial
 
-#pol3=PolynomialSpaceOver()
-#fun1=pol3([1,2,3])
-#fun2=pol3([1,2,3])
-#fun3=pol3([1,2])
-#fun4=pol3([1,4,5])
-#fun5=pol3([1,4,4])
+def gcdpol(a, b):
+    removezeroes(a.coefficients)
+    removezeroes(b.coefficients)
+    while len(b.coefficients)!=1:
+        a, b = b, a%b
+    while b.coefficients[0]!=0:
+        a, b = b, a%b
+    return a
+
+def Reducible(polynomial, p):
+    polspace = PolynomialSpaceOver(IntegersModP(p)).factory
+    for i in range(1,int(polynomial.degree()/2)+1):
+        power=p**i
+        coeff=[0]*power
+        coeff.append(1)
+        coeff[1]=coeff[1]-1
+        xpower=polspace(coeff)
+        g=gcdpol(polynomial, xpower)
+        if not g.degree()==0:
+            return False
+    return True
+
+def genIrreduciblePoly(mod, degree):
+   ModP = IntegersModP(mod)
+   Polynomial = PolynomialSpaceOver(ModP)
+ 
+   while True:
+      coefficients = [ModP(random.randint(0, mod-1)) for _ in range(degree)]
+      randomMonicPolynomial = Polynomial(coefficients + [ModP(1)])
+ 
+      if Reducible(randomMonicPolynomial, mod):
+         return randomMonicPolynomial
+
+
+pol3=PolynomialSpaceOver()
+PolyOverQ=PolynomialSpaceOver().factory
+Mod5 = IntegersModP(5)
+polysMod5 = PolynomialSpaceOver(Mod5).factory
+Mod11 = IntegersModP(11)
+polysMod11 = PolynomialSpaceOver(Mod11).factory
+#print(pol3([1,7,49]) / pol3([7]))
+#print(PolyOverQ([1,7,49]) / PolyOverQ([7]))
+#print(polysMod5([1,6,2,4,7,1]))
+#print(polysMod5([1,7,49]) / polysMod5([7]))
+#print(polysMod11([1,7,49]) / polysMod11([7]))
+
+#c=PolyOverQ([1,4,4])
+#d=PolyOverQ([1,2])
+#print(gcdpol(c,d))
+#print(Reducible(polysMod5([1,7,49]),5))
+
+Mod23 = IntegersModP(23)
+coefficients = [Mod23(random.randint(0, 23-1)) for _ in range(3)]
+randomMonicPolynomial = PolynomialSpaceOver(Mod23)(coefficients + [Mod23(1)])
+#print(randomMonicPolynomial)
+#print(Reducible(randomMonicPolynomial, 23))
+
+print(genIrreduciblePoly(23, 3))
+
+
+
+"""
+fun1=pol3([1,2,3])
+fun2=pol3([1,2,3])
+fun3=pol3([1,2])
+fun4=pol3([1,4,5])
+fun5=pol3([1,4,4])
+
 #print(fun1==fun2,fun1==fun3,fun1==fun4)
 #print(fun1+fun3,"   ",fun1+fun2,"   ",fun3+fun4)
 #print(fun3*fun3,"   ",fun1*fun3,"   ",fun4*fun4)
@@ -315,16 +403,4 @@ def PolynomialSpaceOver(field=frac):
 #print(longdiv(testdiv2,testdiv1),"   ",longdiv(testdiv3,testdiv1),"   ",longdiv(testdiv3,testdiv2),"   ",longdiv(testdiv3,testdiv4))
 #print(divmod(fun1,fun3),"   ",longdiv([1,2,3],[1,2]))
 #print(fun1/fun2,"   ",fun5/fun3)
-
-"""
-PolyOverQ=PolynomialSpaceOver().factory
-Mod5 = IntegersModP(5)
-polysMod5 = PolynomialSpaceOver(Mod5).factory
-Mod11 = IntegersModP(11)
-polysMod11 = PolynomialSpaceOver(Mod11).factory
-print(pol3([1,7,49]) / pol3([7]))
-print(PolyOverQ([1,7,49]) / PolyOverQ([7]))
-print(polysMod5([1,6,2,4,7,1]))
-print(polysMod5([1,7,49]) / polysMod5([7]))
-print(polysMod11([1,7,49]) / polysMod11([7]))
 """
