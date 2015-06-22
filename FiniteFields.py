@@ -350,6 +350,14 @@ def PolynomialSpaceOver(field=frac):
 
         def __rdiv__(self, other): 
             return self.__rtruediv__(other)
+
+        def __pow__(self, n):
+            if n==0:
+                return Polynomial([1])
+            a=self
+            for i in range(n-1):
+                a=a*self
+            return a
             
     def ZeroPol():
         return Polynomial([])
@@ -442,7 +450,7 @@ def FiniteField(prime, degree, irreducible=None):
             return self+other
 
         def __sub__(self, other): 
-            return FieldElement(self.poly - other.poly)
+            return self + (-other)
 
         def __rsub__(self, other):
             return (-self)+other  
@@ -507,6 +515,30 @@ def FiniteField(prime, degree, irreducible=None):
             for i in range(n-1):
                 a=a*self
             return a
+
+        def __gt__(self, other):
+            if isinstance(other, int) or isinstance(other, float):
+                tempol= Polynomial([other])
+                return len(self.poly)>len(tempol)
+            return len(self.poly)>len(other.poly)
+
+        def __ge__(self, other):
+            if isinstance(other, int) or isinstance(other, float):
+                tempol= Polynomial([other])
+                return len(self.poly)>=len(tempol)
+            return len(self.poly)>=len(other.poly)
+
+        def __lt__(self, other):
+            if isinstance(other, int) or isinstance(other, float):
+                tempol= Polynomial([other])
+                return len(self.poly)<len(tempol)
+            return len(self.poly)<len(other.poly)
+
+        def __le__(self, other):
+            if isinstance(other, int) or isinstance(other, float):
+                tempol= Polynomial([other])
+                return len(self.poly)<=len(tempol)
+            return len(self.poly)<=len(other.poly)
     
     p, m = prime, degree
     FieldElement.__name__ = 'F_(%d^%d)' % (p,m)
@@ -514,11 +546,22 @@ def FiniteField(prime, degree, irreducible=None):
 
 F5 = FiniteField(5, 1)
 F25 = FiniteField(5, 2)
-print(F25.generator)
-curve = ElliptischeKromme(a=F25([1]), b=F25([1]))
-x = F25([2,1])
-y = F25([0,2])
-print(x,y)
+#print(F25.generator)
+irred=PolynomialSpaceOver(IntegersModP(5))([2,1,1])
+F25x = FiniteField(5, 2, irred)
+curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))
+x = F25x([2,0])
+y = F25x([1,0])
+#P = Punt(curve, x, y)
+
+tes1=PolynomialSpaceOver(IntegersModP(5))([2,1])
+tes2=PolynomialSpaceOver(IntegersModP(5))([0,2])
+print(tes1*tes2,"  ",(tes1*tes2) % irred,"|",tes2**2,"  ",(tes2**2) % irred,"|",tes1**3,"  ",(tes1**3) % irred,"|",tes1*(tes2**2),"  ",(tes1*(tes2**2)) % irred)
+print(x*y,"        |",y**2,"    |",x**3,"                        |",x*(y**2))
+
+tes3=PolynomialSpaceOver(IntegersModP(5))([1])
+print(tes3-tes3**2)
+print((x**3+x+1-1).poly,"   ",(y**2-y**2))
 
 """
 Een hele reeks test prints etc.
