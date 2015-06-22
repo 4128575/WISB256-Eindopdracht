@@ -433,14 +433,29 @@ def FiniteField(prime, degree, irreducible=None):
             else:
                 self.poly = Polynomial([ModP(x) for x in polynomial]) % irreducible
         
-        def __add__(self, other): 
+        def __add__(self, other):
+            if isinstance(other, int) or isinstance(other, float):
+                return FieldElement(self.poly + other)      
             return FieldElement(self.poly + other.poly)
-      
+        
+        def __radd__(self, other):
+            return self+other
+
         def __sub__(self, other): 
             return FieldElement(self.poly - other.poly)
+
+        def __rsub__(self, other):
+            return (-self)+other  
       
-        def __mul__(self, other): 
-            return FieldElement(self.poly * other.poly)
+        def __mul__(self, other):
+            if isinstance(other, int) or isinstance(other, float):
+                newpol=self.poly*other
+                return FieldElement(newpol)      
+            newpol= self.poly * other.poly
+            return FieldElement(newpol)
+
+        def __rmul__(self, other):
+            return self*other
       
         def __eq__(self, other):
             if isinstance(other, FieldElement) and self.poly == other.poly:
@@ -500,10 +515,10 @@ def FiniteField(prime, degree, irreducible=None):
 F5 = FiniteField(5, 1)
 F25 = FiniteField(5, 2)
 print(F25.generator)
-a=F25([1])
-b=F5(1)
-print(3*b)
-#curve = ElliptischeKromme(a=F25([1]), b=F25([1]))
+curve = ElliptischeKromme(a=F25([1]), b=F25([1]))
+x = F25([2,1])
+y = F25([0,2])
+print(x,y)
 
 """
 Een hele reeks test prints etc.
