@@ -517,6 +517,7 @@ def FiniteField(prime, degree, irreducible=None):
             return a
 
         def __gt__(self, other):
+            
             if isinstance(other, int) or isinstance(other, float):
                 tempol= Polynomial([other])
                 return len(self.poly)>len(tempol)
@@ -562,6 +563,7 @@ print(x*y,"        |",y**2,"    |",x**3,"                        |",x*(y**2))
 tes3=PolynomialSpaceOver(IntegersModP(5))([1])
 print(tes3-tes3**2)
 print((x**3+x+1-1).poly,"   ",(y**2-y**2))
+print((x**3+F25x([1])*x+F25x([1])-y**2).poly.coefficients)
 
 """
 Een hele reeks test prints etc.
