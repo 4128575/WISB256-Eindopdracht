@@ -54,6 +54,14 @@ def IntegersModP(p):
             
         def __rmul__(self, other):
             return self*other
+
+        def __pow__(self, k):
+            if k==0:
+                return IntegerModP(1)
+            a=self
+            for i in range(k-1):
+                a=a*self
+            return a
         
         def __eq__(self, other):
             if isinstance(other, int):
@@ -119,16 +127,28 @@ def IntegersModP(p):
             return IntegerModP(other.n % self.n)
         
         def __gt__(self, other):
-            if isinstance(other, int):
+            if isinstance(other, int) or isinstance(other, float):
                 tempint=IntegerModP(other)
                 return self.n>tempint.n
             return self.n>other.n
 
         def __ge__(self, other):
-            if isinstance(other, int):
+            if isinstance(other, int) or isinstance(other, float):
                 tempint=IntegerModP(other)
                 return self.n>=tempint.n
             return self.n>=other.n
+
+        def __lt__(self, other):
+            if isinstance(other, int) or isinstance(other, float):
+                tempint=IntegerModP(other)
+                return self.n<tempint.n
+            return self.n<other.n
+
+        def __le__(self, other):
+            if isinstance(other, int) or isinstance(other, float):
+                tempint=IntegerModP(other)
+                return self.n<=tempint.n
+            return self.n<=other.n
 
     IntegerModP.p = p
     IntegerModP.__name__ = 'Z/%d' % (p)
@@ -466,34 +486,28 @@ def FiniteField(prime, degree, irreducible=None):
             return self.__rtruediv__(other)
         
         def __pow__(self, n):
+            if n==0:
+                return FieldElement(1)
             a=self
-            for i in range(n):
+            for i in range(n-1):
                 a=a*self
             return a
-            
     
     p, m = prime, degree
     FieldElement.__name__ = 'F_(%d^%d)' % (p,m)
     return FieldElement
 
-pol3=PolynomialSpaceOver()
-PolyOverQ=PolynomialSpaceOver().factory
-Mod5 = IntegersModP(5)
-polysMod5 = PolynomialSpaceOver(Mod5).factory
-Mod11 = IntegersModP(11)
-polysMod11 = PolynomialSpaceOver(Mod11).factory
-
-F23 = FiniteField(2,3)
-irred=PolynomialSpaceOver(IntegersModP(2))([1,0,1,1])
-F23x = FiniteField(2,3,irred)
-ub = F23([1,1])
-uc = F23x([1,1])
-print(ub,"  ", ub*ub,"  ",ub.inverse(),"  ",uc,"  ",uc**10,"  ",uc*uc.inverse())
-k = FiniteField(19, 4)
-print(k.cardinality,"  ",k.generator)
-
+F5 = FiniteField(5, 1)
+F25 = FiniteField(5, 2)
+print(F25.generator)
+a=F25([1])
+b=F5(1)
+print(3*b)
+#curve = ElliptischeKromme(a=F25([1]), b=F25([1]))
 
 """
+Een hele reeks test prints etc.
+-------------------------------
 fun1=pol3([1,2,3])
 fun2=pol3([1,2,3])
 fun3=pol3([1,2])
@@ -512,6 +526,13 @@ fun5=pol3([1,4,4])
 #print(divmod(fun1,fun3),"   ",longdiv([1,2,3],[1,2]))
 #print(fun1/fun2,"   ",fun5/fun3)
 
+pol3=PolynomialSpaceOver()
+PolyOverQ=PolynomialSpaceOver().factory
+Mod5 = IntegersModP(5)
+polysMod5 = PolynomialSpaceOver(Mod5).factory
+Mod11 = IntegersModP(11)
+polysMod11 = PolynomialSpaceOver(Mod11).factory
+
 print(pol3([1,7,49]) / pol3([7]))
 print(PolyOverQ([1,7,49]) / PolyOverQ([7]))
 print(polysMod5([1,6,2,4,7,1]))
@@ -529,4 +550,18 @@ randomMonicPolynomial = PolynomialSpaceOver(Mod23)(coefficients + [Mod23(1)])
 print(randomMonicPolynomial)
 print(Reducible(randomMonicPolynomial, 23))
 print(genIrreduciblePoly(23, 3))
+
+F23 = FiniteField(2,3)
+irred=PolynomialSpaceOver(IntegersModP(2))([1,0,1,1])
+F23x = FiniteField(2,3,irred)
+ub = F23([1,1])
+uc = F23x([1,1])
+print(ub,"  ", ub*ub,"  ",ub.inverse(),"  ",uc,"  ",uc**10,"  ",uc*uc.inverse())
+k = FiniteField(19, 4)
+print(k.cardinality,"  ",k.generator)
+
+F5 = FiniteField(5, 1)
+C = ElliptischeKromme(a=F5(1), b=F5(1))
+P = Punt(C, F5(2), F5(1))
+print(P,"  ",2*P,"  ",3*P)
 """
