@@ -9,7 +9,7 @@ def egcd(a, b):
         return (b, 0, 1)
     else:
         g, y, x = egcd(b%a, a)
-        return (g, x-(b//a)*y, y)
+        return g, x-(b//a)*y, y
 
 def IntegersModP(p):
     class IntegerModP(object):
@@ -257,6 +257,8 @@ def PolynomialSpaceOver(field=frac):
             return len(self.coefficients)-1
         
         def __eq__(self, other):
+            if type(self)!=type(other):
+                return False
             if self.degree()!=other.degree():
                 return False
             checklijst=[]
@@ -268,6 +270,9 @@ def PolynomialSpaceOver(field=frac):
                 return False
                 
         def __add__(self, other):
+            if isinstance(other, int) or isinstance(other, float):
+                newcoeffic=addlist(self.coefficients,[other])
+                return Polynomial(newcoeffic)
             newcoeffic=addlist(self.coefficients,other.coefficients)
             return Polynomial(newcoeffic)
         
@@ -281,6 +286,9 @@ def PolynomialSpaceOver(field=frac):
             return (-self)+other
         
         def __mul__(self, other):
+            if isinstance(other, int) or isinstance(other, float):
+                newcoeffic=multiply(self.coefficients,[other])
+                return Polynomial(newcoeffic)
             if self.ZeroPol() or other.ZeroPol():
                 return ZeroPol()
             newcoeffic=multiply(self.coefficients,other.coefficients)
@@ -289,25 +297,31 @@ def PolynomialSpaceOver(field=frac):
         def __rmul__(self, other):
             return self*other
         
+        def __iter__(self): 
+            return iter(self.coefficients)
+        
+        def __abs__(self): 
+            return len(self.coefficients)
+        
         def __divmod__(self, other):
             listtuple=longdiv(self.coefficients,other.coefficients)
-            return listtuple[0], listtuple[1]
+            return Polynomial(listtuple[0]), Polynomial(listtuple[1])
         
         def __mod__(self,other):
             quotient, remainder = divmod(self,other)
-            return Polynomial(remainder)
+            return remainder
         
         def __truediv__(self, other): 
             quotient, remainder = divmod(self,other)
-            if remainder==[0]:
-                return Polynomial(quotient)
+            if remainder.coefficients==[0]:
+                return quotient
             else:
                 raise Exception("The polynomial %s is not divisible by %s!" % (self,other))
 
         def __rtruediv__(self, other): 
             quotient, remainder = divmod(other,self)
-            if remainder==[0]:
-                return Polynomial(quotient)
+            if remainder.coefficients==[0]:
+                return quotient
             else:
                 raise Exception("The polynomial %s is not divisible by %s!" % (other,self))
             
@@ -332,6 +346,27 @@ def gcdpol(a, b):
     while b.coefficients[0]!=0:
         a, b = b, a%b
     return a
+
+def extgcdpol(a, b):
+    removezeroes(a.coefficients)
+    removezeroes(b.coefficients)
+    if abs(b) > abs(a):
+        x,y,d = extgcdpol(b, a)
+        return y,x,d
+ 
+    if abs(b) == 1 and b.coefficients[0]==0:
+        return 1, 0, a
+ 
+    x1, x2, y1, y2 = 0, 1, 1, 0
+    while abs(b) > 0:
+        if abs(b)==1 and b.coefficients[0]==0:
+            break
+        q, r = divmod(a,b)
+        x = x2 - q*x1
+        y = y2 - q*y1
+        a, b, x2, x1, y2, y1 = b, r, x1, x, y1, y
+ 
+    return x2, y2, a
 
 def Reducible(polynomial, p):
     polspace = PolynomialSpaceOver(IntegersModP(p)).factory
@@ -367,11 +402,14 @@ def FiniteField(prime, degree, irreducible=None):
     
     class FieldElement(object):
         cardinality=prime**degree
+        generator=irreducible
         def __init__(self,polynomial):
-            if isinstance(polynomial,Polynomial):
-                self.poly=polynomial % irreducible
-            if isinstance(polynomial,int) or isinstance(polynomial,ModP):
-                self.poly = Polynomial([ModP(poly)])
+            if type(polynomial) is FieldElement:
+                self.poly = polynomial.poly
+            elif isinstance(polynomial, Polynomial):
+                self.poly = polynomial % irreducible
+            elif type(polynomial) is int or type(polynomial) is ModP:
+                self.poly = Polynomial([ModP(polynomial)])
             else:
                 self.poly = Polynomial([ModP(x) for x in polynomial]) % irreducible
         
@@ -401,10 +439,43 @@ def FiniteField(prime, degree, irreducible=None):
         def __divmod__(self, other):
             q,r = divmod(self.poly, other.poly)
             return FieldElement(q), FieldElement(r)
+        
+        def inverse(self):
+            if self == FieldElement(0):
+                raise ZeroDivisionError
+            (x, y, d) = extgcdpol(self.poly, self.generator)
+            invcoef=d.coefficients[0].modinverse().n
+            a=[]
+            for i in range(len(x.coefficients)):
+                if isinstance(x.coefficients[i],int):
+                    a.append(x.coefficients[i])
+                else:
+                    a.append(x.coefficients[i].n)
+            return FieldElement(a) * FieldElement(invcoef)
+
+        def __truediv__(self, other): 
+            return self * other.inverse()
+            
+        def __rtruediv__(self, other): 
+            return self.inverse() * other
+            
+        def __div__(self, other): 
+            return self.__truediv__(other)
+            
+        def __rdiv__(self, other): 
+            return self.__rtruediv__(other)
+        
+        def __pow__(self, n):
+            a=self
+            for i in range(n):
+                a=a*self
+            return a
+            
+    
     p, m = prime, degree
     FieldElement.__name__ = 'F_(%d^%d)' % (p,m)
     return FieldElement
-                
+
 pol3=PolynomialSpaceOver()
 PolyOverQ=PolynomialSpaceOver().factory
 Mod5 = IntegersModP(5)
@@ -413,8 +484,15 @@ Mod11 = IntegersModP(11)
 polysMod11 = PolynomialSpaceOver(Mod11).factory
 
 F23 = FiniteField(2,3)
-x = F23([1,1])
-print(x)
+irred=PolynomialSpaceOver(IntegersModP(2))([1,0,1,1])
+F23x = FiniteField(2,3,irred)
+ub = F23([1,1])
+uc = F23x([1,1])
+print(ub,"  ", ub*ub,"  ",ub.inverse(),"  ",uc,"  ",uc**10,"  ",uc*uc.inverse())
+k = FiniteField(19, 4)
+print(k.cardinality,"  ",k.generator)
+
+
 """
 fun1=pol3([1,2,3])
 fun2=pol3([1,2,3])
