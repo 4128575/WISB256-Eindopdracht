@@ -517,28 +517,35 @@ def FiniteField(prime, degree, irreducible=None):
             return a
 
         def __gt__(self, other):
-            
             if isinstance(other, int) or isinstance(other, float):
-                tempol= Polynomial([other])
-                return len(self.poly)>len(tempol)
+                if len(self.poly)>1:
+                    return True
+                else:
+                    return self.poly.coefficients[0]>other
             return len(self.poly)>len(other.poly)
 
         def __ge__(self, other):
             if isinstance(other, int) or isinstance(other, float):
-                tempol= Polynomial([other])
-                return len(self.poly)>=len(tempol)
+                if len(self.poly)>1:
+                    return True
+                else:
+                    return self.poly.coefficients[0]>=other
             return len(self.poly)>=len(other.poly)
 
         def __lt__(self, other):
             if isinstance(other, int) or isinstance(other, float):
-                tempol= Polynomial([other])
-                return len(self.poly)<len(tempol)
+                if len(self.poly)>1:
+                    return False
+                else:
+                    return self.poly.coefficients[0]>other
             return len(self.poly)<len(other.poly)
 
         def __le__(self, other):
             if isinstance(other, int) or isinstance(other, float):
-                tempol= Polynomial([other])
-                return len(self.poly)<=len(tempol)
+                if len(self.poly)>1:
+                    return False
+                else:
+                    return self.poly.coefficients[0]>other
             return len(self.poly)<=len(other.poly)
     
     p, m = prime, degree
@@ -547,7 +554,7 @@ def FiniteField(prime, degree, irreducible=None):
 
 F5 = FiniteField(5, 1)
 F25 = FiniteField(5, 2)
-#print(F25.generator)
+print(F25.generator)
 irred=PolynomialSpaceOver(IntegersModP(5))([2,1,1])
 F25x = FiniteField(5, 2, irred)
 curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))

@@ -77,6 +77,5 @@ def FindTorsionPoints(kromme):
 
 testkromme = ElliptischeKromme(-43,166)
 a=FindTorsionPoints(testkromme)
-print(a)
 for i in range(len(a)):
     print(a[i])
