@@ -567,7 +567,7 @@ curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))
 x = F25x([2,1])
 y = F25x([0,2])
 P = Punt(curve, x, y)
-print(P,"   ",-P,"   ",2*P,"   ",4*P,"   ",9*P)
+#print(P,"   ",-P,"   ",2*P,"   ",4*P,"   ",9*P)
 
 tes1=PolynomialSpaceOver(IntegersModP(5))([2,1])
 tes2=PolynomialSpaceOver(IntegersModP(5))([0,2])

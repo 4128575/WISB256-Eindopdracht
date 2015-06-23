@@ -45,7 +45,7 @@ def FindTorsionPoints(kromme):
     """
     D=kromme.discriminant
     ylijst=[]
-    for i in range(1,abs(int((D)**(1/2)))+2):
+    for i in range(1,int(abs((D)**(1/2)))+2):
         if D % (i**2)==0:
             ylijst.append(i)
     """
@@ -75,7 +75,65 @@ def FindTorsionPoints(kromme):
     torsiepunten.append(InfPoint(kromme))
     return torsiepunten
 
+def GroupStructure(kromme, torsiepuntlijst=None):
+    if torsiepuntlijst==None:
+        torsiepunten=FindTorsionPoints(kromme)
+    else:
+        torsiepunten=torsiepuntlijst
+    cardinaliteit=len(torsiepunten)
+    if cardinaliteit in [1,2,3,5,6,7,9,10]:
+        return "E_tors" ' \u2245 ' + 'Z/%dZ' % (cardinaliteit)
+    if cardinaliteit==16:
+        return "E_tors" ' \u2245 ' + 'Z/2Z x Z/8Z'
+    if cardinaliteit==4:
+        for punt in torsiepunten:
+            if not isinstance((2*punt),InfPoint):
+                return "E_tors" ' \u2245 ' + 'Z/%dZ' % (cardinaliteit)
+        return "E_tors" ' \u2245 ' + 'Z/2Z x Z/2Z'
+    if cardinaliteit==8:
+        for punt in torsiepunten:
+            if not isinstance((4*punt),InfPoint):
+                return "E_tors" ' \u2245 ' + 'Z/%dZ' % (cardinaliteit)
+        return "E_tors" ' \u2245 ' + 'Z/2Z x Z/4Z'
+    if cardinaliteit==12:
+        for punt in torsiepunten:
+            if not isinstance((6*punt),InfPoint):
+                if not isinstance((4*punt),InfPoint):
+                    return "E_tors" ' \u2245 ' + 'Z/%dZ' % (cardinaliteit)
+        return "E_tors" ' \u2245 ' + 'Z/2Z x Z/8Z'
+
+
 testkromme = ElliptischeKromme(-43,166)
 a=FindTorsionPoints(testkromme)
+print("Voor: ", testkromme)
 for i in range(len(a)):
     print(a[i])
+print(GroupStructure(testkromme),"\n")
+
+testkromme = ElliptischeKromme(14,19)
+a=FindTorsionPoints(testkromme)
+print("Voor: ", testkromme)
+for i in range(len(a)):
+    print(a[i])
+print(GroupStructure(testkromme),"\n")
+
+testkromme = ElliptischeKromme(1,2)
+a=FindTorsionPoints(testkromme)
+print("Voor: ", testkromme)
+for i in range(len(a)):
+    print(a[i])
+print(GroupStructure(testkromme),"\n")
+
+testkromme = ElliptischeKromme(2,0)
+a=FindTorsionPoints(testkromme)
+print("Voor: ", testkromme)
+for i in range(len(a)):
+    print(a[i])
+print(GroupStructure(testkromme),"\n",)
+
+testkromme = ElliptischeKromme(-4,0)
+a=FindTorsionPoints(testkromme)
+print("Voor: ", testkromme)
+for i in range(len(a)):
+    print(a[i])
+print(GroupStructure(testkromme),"\n")
