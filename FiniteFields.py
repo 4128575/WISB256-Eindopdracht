@@ -237,6 +237,10 @@ def PolynomialSpaceOver(field=frac):
         
         def __init__(self,coefficients):
             self.coefficients=coefficients
+            while self.coefficients[-1]==0 and len(self.coefficients)>1:
+                self.coefficients.pop()
+            if self.coefficients == []:
+                self.coefficients.append(0)
             
         def ZeroPol(self): 
             return self.coefficients == []
@@ -393,7 +397,6 @@ def extgcdpol(a, b):
         x = x2 - q*x1
         y = y2 - q*y1
         a, b, x2, x1, y2, y1 = b, r, x1, x, y1, y
- 
     return x2, y2, a
 
 def Reducible(polynomial, p):
@@ -489,6 +492,8 @@ def FiniteField(prime, degree, irreducible=None):
             (x, y, d) = extgcdpol(self.poly, self.generator)
             invcoef=d.coefficients[0].modinverse().n
             a=[]
+            if isinstance(x, int):
+                x=Polynomial([x])
             for i in range(len(x.coefficients)):
                 if isinstance(x.coefficients[i],int):
                     a.append(x.coefficients[i])
@@ -552,25 +557,22 @@ def FiniteField(prime, degree, irreducible=None):
     FieldElement.__name__ = 'F_(%d^%d)' % (p,m)
     return FieldElement
 
+Mod5 = IntegersModP(5)
 F5 = FiniteField(5, 1)
 F25 = FiniteField(5, 2)
-print(F25.generator)
 irred=PolynomialSpaceOver(IntegersModP(5))([2,1,1])
-F25x = FiniteField(5, 2, irred)
+irred2=PolynomialSpaceOver(IntegersModP(5))([3,0,1])
+F25x = FiniteField(5, 2, irred2)
 curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))
-x = F25x([2,0])
-y = F25x([1,0])
-#P = Punt(curve, x, y)
+x = F25x([2,1])
+y = F25x([0,2])
+P = Punt(curve, x, y)
+print(P,"   ",-P,"   ",2*P,"   ",4*P,"   ",9*P)
 
 tes1=PolynomialSpaceOver(IntegersModP(5))([2,1])
 tes2=PolynomialSpaceOver(IntegersModP(5))([0,2])
-print(tes1*tes2,"  ",(tes1*tes2) % irred,"|",tes2**2,"  ",(tes2**2) % irred,"|",tes1**3,"  ",(tes1**3) % irred,"|",tes1*(tes2**2),"  ",(tes1*(tes2**2)) % irred)
-print(x*y,"        |",y**2,"    |",x**3,"                        |",x*(y**2))
-
-tes3=PolynomialSpaceOver(IntegersModP(5))([1])
-print(tes3-tes3**2)
-print((x**3+x+1-1).poly,"   ",(y**2-y**2))
-print((x**3+F25x([1])*x+F25x([1])-y**2).poly.coefficients)
+#print(tes1*tes2,"  ",(tes1*tes2) % irred,"|",tes2**2,"  ",(tes2**2) % irred,"|",tes1**3,"  ",(tes1**3) % irred,"|",tes1*(tes2**2),"  ",(tes1*(tes2**2)) % irred)
+#print(x*y,"        |",y**2,"    |",x**3,"                        |",x*(y**2))
 
 """
 Een hele reeks test prints etc.
@@ -580,6 +582,8 @@ fun2=pol3([1,2,3])
 fun3=pol3([1,2])
 fun4=pol3([1,4,5])
 fun5=pol3([1,4,4])
+
+Hier testen
 
 #print(fun1==fun2,fun1==fun3,fun1==fun4)
 #print(fun1+fun3,"   ",fun1+fun2,"   ",fun3+fun4)
