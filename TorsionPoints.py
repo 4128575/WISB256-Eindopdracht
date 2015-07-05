@@ -129,7 +129,14 @@ a=FindTorsionPoints(testkromme)
 print("Voor: ", testkromme)
 for i in range(len(a)):
     print(a[i])
-print(GroupStructure(testkromme),"\n",)
+print(GroupStructure(testkromme),"\n")
+
+testkromme = ElliptischeKromme(-4,0)
+a=FindTorsionPoints(testkromme)
+print("Voor: ", testkromme)
+for i in range(len(a)):
+    print(a[i])
+print(GroupStructure(testkromme),"\n")
 
 testkromme = ElliptischeKromme(-4,0)
 a=FindTorsionPoints(testkromme)

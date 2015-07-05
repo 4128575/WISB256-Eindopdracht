@@ -13,14 +13,20 @@ def egcd(a, b):
 
 def IntegersModP(p):
     class IntegerModP(object):
-#            self.n = n % p
         def __init__(self, n):
-            try:
-                self.n = int(n) % IntegerModP.p
-            except:
-                raise TypeError("Can't cast type %s to %s in __init__" % (type(n).__name__, type(self).__name__))
+            self.label="label"
             self.field = IntegerModP
             self.p=p
+            if type(n) is IntegerModP:
+                self.n=n.n
+            if not isinstance(n, int):
+                if n.__class__.__name__ == 'Z/%d' % (p):
+                    self.n=n.n
+            else:
+                try:
+                    self.n = int(n) % IntegerModP.p
+                except:
+                    raise TypeError("Can't cast type %s to %s in __init__" % (type(n).__name__, type(self).__name__))
         
         def __neg__(self): 
             return IntegerModP(-self.n)
@@ -50,6 +56,8 @@ def IntegersModP(p):
             if isinstance(other, int):
                 tempint=IntegerModP(other)
                 return IntegerModP(self.n * tempint.n)
+            if not hasattr(other, "label"):
+                return NotImplemented
             return IntegerModP(self.n * other.n)
             
         def __rmul__(self, other):
@@ -313,6 +321,9 @@ def PolynomialSpaceOver(field=frac):
             if isinstance(other, int) or isinstance(other, float):
                 newcoeffic=multiply(self.coefficients,[other])
                 return Polynomial(newcoeffic)
+            if hasattr(other, "label"):
+                newcoeffic=multiply(self.coefficients,[other])
+                return Polynomial(newcoeffic)
             if self.ZeroPol() or other.ZeroPol():
                 return ZeroPol()
             newcoeffic=multiply(self.coefficients,other.coefficients)
@@ -435,6 +446,8 @@ def FiniteField(prime, degree, irreducible=None):
         cardinality=prime**degree
         generator=irreducible
         def __init__(self,polynomial):
+            self.prime=prime
+            self.degree=degree
             if type(polynomial) is FieldElement:
                 self.poly = polynomial.poly
             elif isinstance(polynomial, Polynomial):
@@ -461,7 +474,10 @@ def FiniteField(prime, degree, irreducible=None):
         def __mul__(self, other):
             if isinstance(other, int) or isinstance(other, float):
                 newpol=self.poly*other
-                return FieldElement(newpol)      
+                return FieldElement(newpol)
+            if hasattr(other, "label"):
+                newpol=self.poly*other
+                return FieldElement(newpol)
             newpol= self.poly * other.poly
             return FieldElement(newpol)
 
@@ -565,14 +581,15 @@ irred2=PolynomialSpaceOver(IntegersModP(5))([3,0,1])
 F25x = FiniteField(5, 2, irred2)
 curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))
 x = F25x([2,1])
-y = F25x([0,2])
-P = Punt(curve, x, y)
+y = F25x([0,1])
+#P = Punt(curve, x, y)
 #print(P,"   ",-P,"   ",2*P,"   ",4*P,"   ",9*P)
 
-tes1=PolynomialSpaceOver(IntegersModP(5))([2,1])
-tes2=PolynomialSpaceOver(IntegersModP(5))([0,2])
+#tes1=PolynomialSpaceOver(IntegersModP(5))([2,1])
+#tes2=PolynomialSpaceOver(IntegersModP(5))([0,2])
 #print(tes1*tes2,"  ",(tes1*tes2) % irred,"|",tes2**2,"  ",(tes2**2) % irred,"|",tes1**3,"  ",(tes1**3) % irred,"|",tes1*(tes2**2),"  ",(tes1*(tes2**2)) % irred)
 #print(x*y,"        |",y**2,"    |",x**3,"                        |",x*(y**2))
+
 
 """
 Een hele reeks test prints etc.
