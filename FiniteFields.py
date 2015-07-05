@@ -14,7 +14,7 @@ def egcd(a, b):
 def IntegersModP(p):
     class IntegerModP(object):
         def __init__(self, n):
-            self.label="label"
+            self.label="modp"
             self.field = IntegerModP
             self.p=p
             if type(n) is IntegerModP:
@@ -135,9 +135,11 @@ def IntegersModP(p):
             return IntegerModP(other.n % self.n)
         
         def __gt__(self, other):
-            if isinstance(other, int) or isinstance(other, float):
+            if isinstance(other, int):
                 tempint=IntegerModP(other)
                 return self.n>tempint.n
+            if isinstance(other, float):
+                return self.n>other
             return self.n>other.n
 
         def __ge__(self, other):
@@ -271,7 +273,7 @@ def PolynomialSpaceOver(field=frac):
                     if self.coefficients[i]==1:
                         term="x^%d" % i
                         lijstje.append(term)
-                    elif self.coefficients[i]>1:
+                    elif self.coefficients[i]!=0 and self.coefficients[i]!=1:
                         term=str(self.coefficients[i])+"x^%d" % i
                         lijstje.append(term)
                 return " + ".join(lijstje)
@@ -517,7 +519,13 @@ def FiniteField(prime, degree, irreducible=None):
                     a.append(x.coefficients[i].n)
             return FieldElement(a) * FieldElement(invcoef)
 
-        def __truediv__(self, other): 
+        def __truediv__(self, other):
+            if isinstance(other, int):
+                newpol=[x / other for x in self.poly.coefficients]
+                return FieldElement(newpol)
+            if hasattr(other, "label"):
+                newpol=[x / other for x in self.poly.coefficients]
+                return FieldElement(newpol)
             return self * other.inverse()
             
         def __rtruediv__(self, other): 
@@ -573,83 +581,14 @@ def FiniteField(prime, degree, irreducible=None):
     FieldElement.__name__ = 'F_(%d^%d)' % (p,m)
     return FieldElement
 
-Mod5 = IntegersModP(5)
-F5 = FiniteField(5, 1)
-F25 = FiniteField(5, 2)
-irred=PolynomialSpaceOver(IntegersModP(5))([2,1,1])
-irred2=PolynomialSpaceOver(IntegersModP(5))([3,0,1])
-F25x = FiniteField(5, 2, irred2)
-curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))
-x = F25x([2,1])
-y = F25x([0,1])
-#P = Punt(curve, x, y)
-#print(P,"   ",-P,"   ",2*P,"   ",4*P,"   ",9*P)
-
-#tes1=PolynomialSpaceOver(IntegersModP(5))([2,1])
-#tes2=PolynomialSpaceOver(IntegersModP(5))([0,2])
-#print(tes1*tes2,"  ",(tes1*tes2) % irred,"|",tes2**2,"  ",(tes2**2) % irred,"|",tes1**3,"  ",(tes1**3) % irred,"|",tes1*(tes2**2),"  ",(tes1*(tes2**2)) % irred)
-#print(x*y,"        |",y**2,"    |",x**3,"                        |",x*(y**2))
-
-
 """
 Een hele reeks test prints etc.
 -------------------------------
-fun1=pol3([1,2,3])
-fun2=pol3([1,2,3])
-fun3=pol3([1,2])
-fun4=pol3([1,4,5])
-fun5=pol3([1,4,4])
-
-Hier testen
-
-#print(fun1==fun2,fun1==fun3,fun1==fun4)
-#print(fun1+fun3,"   ",fun1+fun2,"   ",fun3+fun4)
-#print(fun3*fun3,"   ",fun1*fun3,"   ",fun4*fun4)
-
-#testdiv1=[1,2]
-#testdiv2=[2,3,2]
-#testdiv3=[4,5,1,2]
-#testdiv4=[8]
-#print(longdiv(testdiv2,testdiv1),"   ",longdiv(testdiv3,testdiv1),"   ",longdiv(testdiv3,testdiv2),"   ",longdiv(testdiv3,testdiv4))
-#print(divmod(fun1,fun3),"   ",longdiv([1,2,3],[1,2]))
-#print(fun1/fun2,"   ",fun5/fun3)
-
-pol3=PolynomialSpaceOver()
-PolyOverQ=PolynomialSpaceOver().factory
-Mod5 = IntegersModP(5)
-polysMod5 = PolynomialSpaceOver(Mod5).factory
-Mod11 = IntegersModP(11)
-polysMod11 = PolynomialSpaceOver(Mod11).factory
-
-print(pol3([1,7,49]) / pol3([7]))
-print(PolyOverQ([1,7,49]) / PolyOverQ([7]))
-print(polysMod5([1,6,2,4,7,1]))
-print(polysMod5([1,7,49]) / polysMod5([7]))
-print(polysMod11([1,7,49]) / polysMod11([7]))
-
-c=PolyOverQ([1,4,4])
-d=PolyOverQ([1,2])
-print(gcdpol(c,d))
-print(Reducible(polysMod5([1,7,49]),5))
-
-Mod23 = IntegersModP(23)
-coefficients = [Mod23(random.randint(0, 23-1)) for _ in range(3)]
-randomMonicPolynomial = PolynomialSpaceOver(Mod23)(coefficients + [Mod23(1)])
-print(randomMonicPolynomial)
-print(Reducible(randomMonicPolynomial, 23))
-print(genIrreduciblePoly(23, 3))
-
-F23 = FiniteField(2,3)
-irred=PolynomialSpaceOver(IntegersModP(2))([1,0,1,1])
-F23x = FiniteField(2,3,irred)
-ub = F23([1,1])
-uc = F23x([1,1])
-print(ub,"  ", ub*ub,"  ",ub.inverse(),"  ",uc,"  ",uc**10,"  ",uc*uc.inverse())
-k = FiniteField(19, 4)
-print(k.cardinality,"  ",k.generator)
-
 F5 = FiniteField(5, 1)
 C = ElliptischeKromme(a=F5(1), b=F5(1))
 P = Punt(C, F5(2), F5(1))
 print(P,"  ",2*P,"  ",3*P)
+curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))
+P = Punt(curve, x, y)
+print(P,"   ",-P,"   ",2*P,"   ",4*P,"   ",9*P)
 """

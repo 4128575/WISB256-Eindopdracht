@@ -14,9 +14,6 @@ class ElliptischeKromme(object):
     def __str__(self):
         return 'y^2=x^3+%sx+%s' % (self.a,self.b)
 
-#curvegoed=ElliptischeKromme(1,2)
-#curvefout=ElliptischeKromme(0,0)
-
 class Punt(object):
     def __init__(self, kromme, x, y):
         self.kromme = kromme # the curve containing this point
@@ -105,6 +102,7 @@ class InfPoint(Punt):
         else:
             return self
 
+#curvegoed=ElliptischeKromme(1,2)
 #puntgoed=Punt(curvegoed,1,2)
 #puntfout=Punt(curvegoed,1,1)
 
