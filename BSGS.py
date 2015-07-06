@@ -59,7 +59,7 @@ curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))
 curve2 = ElliptischeKromme(a=F35x([1]), b=F35x([1]))
 curve3 = ElliptischeKromme(a=F45x([1]), b=F45x([1]))
 
-def BabyStepGiantStep(kromme):
+def BabyStepGiantStepOnce(kromme):
     """
     Rudimentaire versie van Baby-Step-Giant-Step algoritme.
     """
@@ -68,16 +68,17 @@ def BabyStepGiantStep(kromme):
 #    CurrentField=kromme.a.__class__
     randompunt = genCurvePoint(kromme)
 #    kwadraat=kromme.a*xpunt+xpunt**3+kromme.b
-    m=math.ceil((mod**degree)**(1/4))+1
+    m=math.ceil((mod**degree)**(1/4))
     puntlijst=[]
     for j in range(m):
         puntlijst.append(j*randompunt)
     L=1
     Q=(mod**degree+1)*randompunt
-    k=0
     index='unknown'
     tijdelijst=[]
-    for k in range(10):
+    k=-1
+    while True:
+        k+=1
         punt2=Q+k*((2*m)*randompunt)
         tijdelijst.append(punt2)
         for j in range(len(puntlijst)):
@@ -103,7 +104,47 @@ def BabyStepGiantStep(kromme):
             else:
                 i+=1
     L=lcm(L,M)
-    return puntlijst, tijdelijst, index,M
+    integerlist=list(range((mod**degree)+1-2*math.ceil(math.sqrt(mod**degree)),(mod**degree)+1+2*math.ceil(math.sqrt(mod**degree))))
+    counter=0
+    N = 'Nothing'
+    for integer in integerlist:
+        if integer % L == 0:
+            N = integer
+            counter += 1
+    if counter > 1:
+        return None
+    else:
+        return N
+
+def BabyStepGiantStep(kromme):
+    while True:
+        resultaat = BabyStepGiantStepOnce(kromme)
+        if isinstance(resultaat, int):
+            return resultaat
 
 resultaat = BabyStepGiantStep(curve)
-print('j, k: ',resultaat[2],'   ',resultaat[0][resultaat[2][0]],'   ',-resultaat[1][resultaat[2][1]],'   ',resultaat[3])
+resultaat2 = BabyStepGiantStep(curve2)
+resultaat3 = BabyStepGiantStep(curve3)
+print(resultaat)
+print(resultaat2)
+print(resultaat3)
+
+def BSGScheck(kromme):
+    mod=kromme.a.prime
+    degree=kromme.a.degree
+    CurrentField=kromme.a.__class__
+    cardinaliteit = 1
+    #vanwege infpoint
+    for i in itertools.product(range(mod),repeat=degree):
+        ylist=list(i)
+        ypunt=CurrentField(ylist)
+        for i in itertools.product(range(mod),repeat=degree):
+            xlist=list(i)
+            xpunt=CurrentField(xlist)
+            getal = xpunt**3+kromme.a*xpunt+kromme.b-ypunt**2
+            if len(getal.poly) == 1:
+                if getal.poly.coefficients[0]==0:
+                    cardinaliteit += 1
+    return cardinaliteit
+    
+print(BSGScheck(curve),BSGScheck(curve2),BSGScheck(curve3))   
