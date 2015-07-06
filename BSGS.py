@@ -46,11 +46,8 @@ def prime_factors(n):
         factors.append(n)
     return factors
 
-def lcm(*numbers):
-    """Return lowest common multiple."""    
-    def lcm(a, b):
-        return (a * b) // gcd(a, b)
-    return reduce(lcm, numbers, 1)
+def lcm(a,b): 
+    return abs(a * b) / fractions.gcd(a,b) if a and b else 0
 
 irred3=PolynomialSpaceOver(IntegersModP(5))([2,1,0,3,1])
 irred=PolynomialSpaceOver(IntegersModP(5))([4,3,1,1])
@@ -97,17 +94,15 @@ def BabyStepGiantStep(kromme):
             break
     M=int(mod**degree+1+2*m*index[1]+index[0])
     factoren=prime_factors(M)
-    factoren2=[]
-    for g in factoren:
-        if g not in factoren2:
-            factoren.append(g)
+    factoren=list(set(factoren))
     i=0
-    while i < (len(factoren2)-1):
+    while i < (len(factoren)-1):
         if (M/factoren[i])-int(M/factoren[i])<1.0e-5:
             if (int(M/factoren[i])*randompunt).x=='infx':
                 M=int(M/factoren[i])
             else:
                 i+=1
+    L=lcm(L,M)
     return puntlijst, tijdelijst, index,M
 
 resultaat = BabyStepGiantStep(curve)
