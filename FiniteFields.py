@@ -580,15 +580,3 @@ def FiniteField(prime, degree, irreducible=None):
     p, m = prime, degree
     FieldElement.__name__ = 'F_(%d^%d)' % (p,m)
     return FieldElement
-
-"""
-Een hele reeks test prints etc.
--------------------------------
-F5 = FiniteField(5, 1)
-C = ElliptischeKromme(a=F5(1), b=F5(1))
-P = Punt(C, F5(2), F5(1))
-print(P,"  ",2*P,"  ",3*P)
-curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))
-P = Punt(curve, x, y)
-print(P,"   ",-P,"   ",2*P,"   ",4*P,"   ",9*P)
-"""

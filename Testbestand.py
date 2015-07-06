@@ -1,7 +1,7 @@
 from FiniteFields import *
 from ElliptischeKrommen import *
 #from BSGS import *
-#from TorsionPoints import *
+from TorsionPoints import *
 import math
 
 print("""
@@ -126,3 +126,73 @@ print(Mod5(2)*2,'   ',12*Mod53(6),'   ',Mod5(2)**3,'   ',Mod53(12)/12,'   ',12*t
 print("""
 We kunnen uiteraard ook Elliptischekrommen definiëren, zowel over Q als over F_(p^n), en hier operaties op uitvoeren.
 """)
+testkromme = ElliptischeKromme(frac(-2),frac(4))
+testkromme2 = ElliptischeKromme(frac(1),frac(2))
+testp1 = Punt(testkromme, frac(3), frac(5))
+testp2 = Punt(testkromme, frac(-2), frac(0))
+testp3 = Punt(testkromme2, frac(-1), frac(0))
+testp4 = Punt(testkromme2, frac(0), frac(2))
+print(testp2+testp1,testp2+testp2,-testp1,testp1*5,5*testp1,testp2-3*testp1,testp3*5,testp3*10,testp3-testp4)
+
+F5 = FiniteField(5, 1)
+C1 = ElliptischeKromme(a=F5(1), b=F5(1))
+P1 = Punt(C1, F5(2), F5(1))
+print(P1,"  ",2*P1,"  ",3*P1)
+
+curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))
+x2 = F25x([2,1])
+y2 = F25x([1,2])
+P2 = Punt(curve, x2, y2)
+print(P2,"   ",-P2,"   ",2*P2,"   ",4*P2,"   ",9*P2)
+
+irred6=polysMod11([8,7,9,7,5,2,9,1])
+F117x=FiniteField(11,7,irred6)
+curve2 = ElliptischeKromme(F117x([4,2,2]), F117x([6,10,3,3,0,3,2]))
+x3 = F117x([8,2,4])
+y3 = F117x([0,1])
+P3 = Punt(curve2, x3, y3)
+print(P3,'    ',P3*4,'    ',P3*24,'   ',P3*10000)
+
+print("""
+Over Q kunnen we de punten met eindige orden (torsiepunten) bepalen en de groepsstructuur weergeven.
+""")
+testkromme = ElliptischeKromme(-43,166)
+a=FindTorsionPoints(testkromme)
+print("Voor: ", testkromme)
+for i in range(len(a)):
+    print(a[i])
+print(GroupStructure(testkromme),"\n")
+
+testkromme = ElliptischeKromme(14,19)
+a=FindTorsionPoints(testkromme)
+print("Voor: ", testkromme)
+for i in range(len(a)):
+    print(a[i])
+print(GroupStructure(testkromme),"\n")
+
+testkromme = ElliptischeKromme(1,2)
+a=FindTorsionPoints(testkromme)
+print("Voor: ", testkromme)
+for i in range(len(a)):
+    print(a[i])
+print(GroupStructure(testkromme),"\n")
+
+testkromme = ElliptischeKromme(2,0)
+a=FindTorsionPoints(testkromme)
+print("Voor: ", testkromme)
+for i in range(len(a)):
+    print(a[i])
+print(GroupStructure(testkromme),"\n")
+
+testkromme = ElliptischeKromme(-4,0)
+a=FindTorsionPoints(testkromme)
+print("Voor: ", testkromme)
+for i in range(len(a)):
+    print(a[i])
+print(GroupStructure(testkromme),"\n")
+
+print("""
+Tenslotte hebben we het Baby-Step-Giant-Step algoritme geïmplementeerd over F_(p^k). Hiermee vinden we de Cardinaliteit van Elliptische Krommen over F_(p^k).
+""")
+
+print(F25x([2])==F25x([3]))

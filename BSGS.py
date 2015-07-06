@@ -1,6 +1,7 @@
 from FiniteFields import *
 from ElliptischeKrommen import *
 import math
+import itertools
 
 def genFieldPol(mod, degree):
     """
@@ -14,27 +15,42 @@ def genFieldPol(mod, degree):
         randomMonicPolynomial = Polynomial(coefficients + [ModP(1)])
         return randomMonicPolynomial
 
-Mod5=IntegersModP(5)
-
-def BabyStepGiantStep(kromme):
-    """
-    Rudimentaire versie van Baby-Step-Giant-Step algoritme.
-    """
+def genCurvePoint(kromme):
     mod=kromme.a.prime
     degree=kromme.a.degree
     CurrentField=kromme.a.__class__
-    q=CurrentField.cardinality
-    xpol=genFieldPol(mod, degree)
-    xpunt=CurrentField(xpol.coefficients)
-    kwadraat=kromme.a*xpunt+xpunt**3+kromme.b
-    for k in range(5):
-        for l in range(5):
-            for u in range(5):
-                ypunt=CurrentField([Mod5(k),Mod5(l),Mod5(u)])
-                if kwadraat==ypunt**2:
-                    print('hoi')
-                    return xpunt, ypunt, kwadraat
-    return xpunt, ypunt, kwadraat
+    counter=0
+    while True:
+        counter+=1
+        xpol=genFieldPol(mod, degree)
+        xpunt=CurrentField(xpol.coefficients)
+        kwadraat=kromme.a*xpunt+xpunt**3+kromme.b
+        for i in itertools.product(range(mod),repeat=degree):
+            ylist=list(i)
+            ypunt=CurrentField(ylist)
+            if ypunt**2==kwadraat:
+                return Punt(kromme, xpunt, ypunt)
+        if counter>100:
+            raise Exception("Maximum number of iterations exceeded!")
+
+def prime_factors(n):
+    i = 2
+    factors = []
+    while i * i <= n:
+        if n % i:
+            i += 1
+        else:
+            n //= i
+            factors.append(i)
+    if n > 1:
+        factors.append(n)
+    return factors
+
+def lcm(*numbers):
+    """Return lowest common multiple."""    
+    def lcm(a, b):
+        return (a * b) // gcd(a, b)
+    return reduce(lcm, numbers, 1)
 
 irred3=PolynomialSpaceOver(IntegersModP(5))([2,1,0,3,1])
 irred=PolynomialSpaceOver(IntegersModP(5))([4,3,1,1])
@@ -46,55 +62,53 @@ curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))
 curve2 = ElliptischeKromme(a=F35x([1]), b=F35x([1]))
 curve3 = ElliptischeKromme(a=F45x([1]), b=F45x([1]))
 
-xwerk=PolynomialSpaceOver(IntegersModP(5))([1,4,2,4])
-ywerk=PolynomialSpaceOver(IntegersModP(5))([0,0,1,0])
-
-def BabyStepGiantStep2(kromme,x,y):
+def BabyStepGiantStep(kromme):
+    """
+    Rudimentaire versie van Baby-Step-Giant-Step algoritme.
+    """
     mod=kromme.a.prime
     degree=kromme.a.degree
-    CurrentField=kromme.a.__class__
-    q=CurrentField.cardinality
-    xpunt=CurrentField(x.coefficients)
-    ypunt=CurrentField(y.coefficients)
-    kwadraat=kromme.a*xpunt+xpunt**3+kromme.b-ypunt**2
-    punt=Punt(kromme,xpunt,ypunt)
-    getal=math.ceil((mod**degree)**(1/4))
-    m = getal+1
+#    CurrentField=kromme.a.__class__
+    randompunt = genCurvePoint(kromme)
+#    kwadraat=kromme.a*xpunt+xpunt**3+kromme.b
+    m=math.ceil((mod**degree)**(1/4))+1
     puntlijst=[]
     for j in range(m):
-        puntlijst.append(j*punt)
+        puntlijst.append(j*randompunt)
     L=1
-    Q=(mod**degree+1)*punt
+    Q=(mod**degree+1)*randompunt
     k=0
-    infloop=0
     index='unknown'
-    while True:
-        punt2=Q+k*((2*m)*punt)
+    tijdelijst=[]
+    for k in range(10):
+        punt2=Q+k*((2*m)*randompunt)
+        tijdelijst.append(punt2)
         for j in range(len(puntlijst)):
-            if puntlijst[j]==punt2:
-                index=-j
+            if puntlijst[j].x==punt2.x:
+                if puntlijst[j].y==punt2.y:
+                    index=[-j,k]
+                    break
+                if puntlijst[j].y==(-punt2).y:
+                    index=[j,k]
+                    break
+            if isinstance(index,list):
                 break
-            if puntlijst[j]==-punt2:
-                index=j
-                break
-        k+=1
-        infloop+=1
-        if infloop==100:
+        if isinstance(index,list):
             break
-    return punt2
+    M=int(mod**degree+1+2*m*index[1]+index[0])
+    factoren=prime_factors(M)
+    factoren2=[]
+    for g in factoren:
+        if g not in factoren2:
+            factoren.append(g)
+    i=0
+    while i < (len(factoren2)-1):
+        if (M/factoren[i])-int(M/factoren[i])<1.0e-5:
+            if (int(M/factoren[i])*randompunt).x=='infx':
+                M=int(M/factoren[i])
+            else:
+                i+=1
+    return puntlijst, tijdelijst, index,M
 
-print(BabyStepGiantStep2(curve3,xwerk,ywerk))
-
-
-"""
- a=0
-    while True:
-        a+=1
-        ypol=genFieldPol(mod, degree)
-        ypunt=CurrentField(ypol.coefficients)
-        if a==100:
-            break
-        if ypol*ypol==kwadraat:
-            print('hoi')
-            break
-"""
+resultaat = BabyStepGiantStep(curve)
+print('j, k: ',resultaat[2],'   ',resultaat[0][resultaat[2][0]],'   ',-resultaat[1][resultaat[2][1]],'   ',resultaat[3])

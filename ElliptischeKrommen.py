@@ -86,6 +86,8 @@ class Punt(object):
 class InfPoint(Punt):
     def __init__(self, kromme):
       self.kromme = kromme
+      self.x = 'infx'
+      self.y = 'infy'
  
     def __str__(self):
         return "Point at infinity"
@@ -101,13 +103,3 @@ class InfPoint(Punt):
             raise Exception("n needs to be an int!")
         else:
             return self
-
-#curvegoed=ElliptischeKromme(1,2)
-#puntgoed=Punt(curvegoed,1,2)
-#puntfout=Punt(curvegoed,1,1)
-
-#testkromme = ElliptischeKromme(frac(-2),frac(4))
-#testp1 = Punt(testkromme, frac(3), frac(5))
-#testp2 = Punt(testkromme, frac(-2), frac(0))
-#print(testp2+testp1,testp2+testp2,testp1+testp1+testp1)
-#print(testp1-testp2,testp1+testp1+testp1+testp1+testp1,testp1*5,5*testp1,testp2-3*testp1)
