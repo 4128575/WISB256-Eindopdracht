@@ -1,6 +1,6 @@
 from FiniteFields import *
 from ElliptischeKrommen import *
-#from BSGS import *
+from BSGS import *
 from TorsionPoints import *
 import math
 
@@ -192,7 +192,25 @@ for i in range(len(a)):
 print(GroupStructure(testkromme),"\n")
 
 print("""
-Tenslotte hebben we het Baby-Step-Giant-Step algoritme geïmplementeerd over F_(p^k). Hiermee vinden we de Cardinaliteit van Elliptische Krommen over F_(p^k).
+Tenslotte hebben we het Baby-Step-Giant-Step algoritme geïmplementeerd over F_(p^k). Hiermee vinden we de Cardinaliteit van Elliptische Krommen over F_(p^k). Dit berekenen duurt best lang,
+hoewel niet zolang als puur brute-forcen, omdat er telkens een willekeurig punt gevonden moet worden en dit gaat deels op een bruteforce manier. Bijgeleverd is ook een "BSGS" checkalgoritme.
+Hiermee vinden we domweg de cardinaliteit van de kromme door alle mogelijke combinaties van punten af te gaan. Hiermee kan je controleren dat het algoritme inderdaad functioneert.
+De code staat op het moment uit omdat het erg lang duurt (zeker de laatste kromme). Ter informatie, voor de eerste kromme geeft het check algoritme 27, de tweede 108 en de derde 675.
 """)
+irred7=PolynomialSpaceOver(IntegersModP(5))([2,1,0,3,1])
+irred8=PolynomialSpaceOver(IntegersModP(5))([4,3,1,1])
+irred9=PolynomialSpaceOver(IntegersModP(5))([3,0,1])
+F35xe = FiniteField(5, 3, irred8)
+F25xe = FiniteField(5, 2, irred9)
+F45xe = FiniteField(5, 4, irred7)
+kromme = ElliptischeKromme(a=F25xe([1]), b=F25xe([1]))
+kromme2 = ElliptischeKromme(a=F35xe([1]), b=F35xe([1]))
+kromme3 = ElliptischeKromme(a=F45xe([1]), b=F45xe([1]))
 
-print(F25x([2])==F25x([3]))
+resultaat = BabyStepGiantStep(kromme)
+resultaat2 = BabyStepGiantStep(kromme2)
+#resultaat3 = BabyStepGiantStep(kromme3)
+print(resultaat)
+print(resultaat2)
+#print(resultaat3)
+print(BSGScheck(kromme),BSGScheck(kromme2))

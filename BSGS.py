@@ -49,16 +49,6 @@ def prime_factors(n):
 def lcm(a,b): 
     return abs(a * b) / fractions.gcd(a,b) if a and b else 0
 
-irred3=PolynomialSpaceOver(IntegersModP(5))([2,1,0,3,1])
-irred=PolynomialSpaceOver(IntegersModP(5))([4,3,1,1])
-irred2=PolynomialSpaceOver(IntegersModP(5))([3,0,1])
-F35x = FiniteField(5, 3, irred)
-F25x = FiniteField(5, 2, irred2)
-F45x = FiniteField(5, 4, irred3)
-curve = ElliptischeKromme(a=F25x([1]), b=F25x([1]))
-curve2 = ElliptischeKromme(a=F35x([1]), b=F35x([1]))
-curve3 = ElliptischeKromme(a=F45x([1]), b=F45x([1]))
-
 def BabyStepGiantStepOnce(kromme):
     """
     Rudimentaire versie van Baby-Step-Giant-Step algoritme.
@@ -122,13 +112,6 @@ def BabyStepGiantStep(kromme):
         if isinstance(resultaat, int):
             return resultaat
 
-resultaat = BabyStepGiantStep(curve)
-resultaat2 = BabyStepGiantStep(curve2)
-resultaat3 = BabyStepGiantStep(curve3)
-print(resultaat)
-print(resultaat2)
-print(resultaat3)
-
 def BSGScheck(kromme):
     mod=kromme.a.prime
     degree=kromme.a.degree
@@ -146,5 +129,3 @@ def BSGScheck(kromme):
                 if getal.poly.coefficients[0]==0:
                     cardinaliteit += 1
     return cardinaliteit
-    
-print(BSGScheck(curve),BSGScheck(curve2),BSGScheck(curve3))   
