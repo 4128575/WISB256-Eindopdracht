@@ -13,6 +13,7 @@ class ElliptischeKromme(object):
         self.b = b
         self.check = -16 * (4 * a**3 + 27 * b**2)
         self.discriminant = 4 * a**3 + 27 * b**2
+        
         if self.check == 0:
             raise Exception("The curve %s is not smooth!" % self)
             
@@ -26,9 +27,10 @@ class Punt(object):
     """
     
     def __init__(self, kromme, x, y):
-        self.kromme = kromme # The curve containing this point.
+        self.kromme = kromme # De kromme die dit punt bevat.
         self.x = x
         self.y = y
+        
         if x**3 + self.kromme.a * x + self.kromme.b - y**2 > 1.0e-5:
             raise Exception("The point %s is not on the given curve %s" % (self, kromme))
     
@@ -47,39 +49,46 @@ class Punt(object):
                 if self.y == 0:
                     return InfPoint(self.kromme)
                 else:
-                    helling = (3 * (self.x**2) + self.kromme.a)/(2 * self.y)
+                    helling = (3 * (self.x**2) + self.kromme.a) / (2 * self.y)
                     mu = self.y - helling * self.x
                     xcoor = helling**2 - 2 * self.x
                     ycoor = -helling*xcoor - mu
+                    
                     return Punt(self.kromme, xcoor, ycoor)
             else:
                 return InfPoint(self.kromme)
         else:
-            helling = (other.y - self.y)/(other.x - self.x)
+            helling = (other.y - self.y) / (other.x - self.x)
             mu = self.y - helling * self.x
             xcoor = helling**2 - self.x - other.x
             ycoor = -helling*xcoor - mu
+            
             return Punt(self.kromme, xcoor, ycoor)
 
     def __mul__(self, n):
         if not isinstance(n, int):
-            raise Exception("n needs to be an int!")
+            raise Exception("n needs to be an integer!")
         else:
             if n < 0:
                 return -self * -n
+                
             if n == 0:
                 return InfPoint(self.kromme)
             else:
                 binarylijst = bin(n)[2:]
                 lengte = len(binarylijst)
-                binpuntlijst = [self]+[0]*(lengte-1)
-                for i in range(1,lengte):
+                binpuntlijst = [self] + [0] * (lengte - 1)
+                
+                for i in range(1, lengte):
                     binpuntlijst[i] = binpuntlijst[i-1] + binpuntlijst[i-1]
+                    
                 binarylijst2 = binarylijst[::-1]
                 returnpunt = InfPoint(self.kromme)
+                
                 for k in range(lengte):
                     if binarylijst2[k] == '1':
                         returnpunt = returnpunt + binpuntlijst[k]
+                        
                 return returnpunt
                 
     def __rmul__(self, n):
