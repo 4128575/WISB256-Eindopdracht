@@ -5,6 +5,9 @@ from ElliptischeKrommen import *
 frac = fractions.Fraction
 
 def egcd(a, b):
+    """
+    Dit is het extended euclidean algorithm.
+    """
     if a == 0:
         return (b, 0, 1)
     else:
@@ -12,6 +15,9 @@ def egcd(a, b):
         return g, x-(b//a)*y, y
 
 def IntegersModP(p):
+    """
+    We definiëren een functie die de ruimte Z/pZ nabootst. Hierbinnen definieren we wat een element hieruit is en we definiëren de benodigde operaties.
+    """
     class IntegerModP(object):
         def __init__(self, n):
             self.label="modp"
@@ -181,8 +187,7 @@ def addlist(lijst1,lijst2):
 
 def mult_oneterm(poly,c,i):
     """
-    Return a new list of polynomial coefficients corresponding to the product of the 
-    input polynomial p with the term c*x^i
+    Deze functie returns een nieuwe lijst met coefficiënten van een polynoom die overeenkomen met het polynoom vermenigvuldigt met c*x^i.
     """
     newlijst = [0]*i # increment the list with i zeros
     for coef in poly: 
@@ -191,8 +196,7 @@ def mult_oneterm(poly,c,i):
 
 def multiply(lijst1,lijst2):
     """
-    Function that returns the coefficients of the polynomial resulting from multiplying
-    two polynomials.
+    Deze functie geeft de coefficiënten lijst terug wanneer men twee polynomen vermenigvuldigt.
     """
     if len(lijst1) > len(lijst2): 
         shortlijst=lijst2
@@ -207,7 +211,7 @@ def multiply(lijst1,lijst2):
 
 def removezeroes(poly):
     """
-    Removes the unnecessary zeroes at the end of a list of coefficients.
+    Verwijdert nullen aan het eind van de lijst met coefficiënten.
     """
     while poly[-1]==0 and len(poly)>0:
         poly.pop()
@@ -218,8 +222,7 @@ def removezeroes(poly):
 
 def longdiv(lijst1,lijst2):
     """
-    Algorithm that performs long division for polynomials once. See wikipedia for the pseudo code.
-    The input is a tuple of two lists.
+    Algoritme dat staartdeling for een polynoom één keer uitvoert. De invoer is een tuple van twee lijsten coefficiënten.
     """
     if len(lijst1)<len(lijst2):
         return [0], lijst1
@@ -242,6 +245,9 @@ def longdiv(lijst1,lijst2):
     return quotient, remainder
 
 def PolynomialSpaceOver(field=frac):
+    """
+    Hier definiëren we de polynoom ruimte over een bepaald veld, d.w.z. dat de coefficiënten bijvoorbeeld modulo p gaan. Hierbinnen creëren we polynoom objecten.
+    """
     class Polynomial(object):
         factory = lambda L: Polynomial([field(x) for x in L])
         
@@ -384,6 +390,9 @@ def PolynomialSpaceOver(field=frac):
     return Polynomial
 
 def gcdpol(a, b):
+    """
+    GCD algoritme voor polynomen.
+    """
     removezeroes(a.coefficients)
     removezeroes(b.coefficients)
     while len(b.coefficients)!=1:
@@ -393,6 +402,9 @@ def gcdpol(a, b):
     return a
 
 def extgcdpol(a, b):
+    """
+    Extended Euclidean Algorithm voor polynomen.
+    """
     removezeroes(a.coefficients)
     removezeroes(b.coefficients)
     if abs(b) > abs(a):
@@ -413,6 +425,9 @@ def extgcdpol(a, b):
     return x2, y2, a
 
 def Reducible(polynomial, p):
+    """
+    Functie die controleert of een polynoom reduceerbaar is of niet.
+    """
     polspace = PolynomialSpaceOver(IntegersModP(p)).factory
     for i in range(1,int(polynomial.degree()/2)+1):
         power=p**i
@@ -426,17 +441,23 @@ def Reducible(polynomial, p):
     return True
 
 def genIrreduciblePoly(mod, degree):
-   ModP = IntegersModP(mod)
-   Polynomial = PolynomialSpaceOver(ModP)
+    """
+    Functie die een willekeurig irreduciebel polynoom genereert.
+    """
+    ModP = IntegersModP(mod)
+    Polynomial = PolynomialSpaceOver(ModP)
  
-   while True:
-      coefficients = [ModP(random.randint(0, mod-1)) for _ in range(degree)]
-      randomMonicPolynomial = Polynomial(coefficients + [ModP(1)])
+    while True:
+        coefficients = [ModP(random.randint(0, mod-1)) for _ in range(degree)]
+        randomMonicPolynomial = Polynomial(coefficients + [ModP(1)])
  
-      if Reducible(randomMonicPolynomial, mod):
-         return randomMonicPolynomial
+        if Reducible(randomMonicPolynomial, mod):
+            return randomMonicPolynomial
 
 def FiniteField(prime, degree, irreducible=None):
+    """
+    Hier definiëren we de eindige lichamen F_p^n. De elementen van zo'n lichaam worden geïdentificeerd met polynomen van graad n met coefficiënten modulo p.
+    """
     ModP=IntegersModP(prime)
     if degree==1:
         return ModP

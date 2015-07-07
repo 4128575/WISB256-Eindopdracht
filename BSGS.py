@@ -5,7 +5,7 @@ import itertools
 
 def genFieldPol(mod, degree):
     """
-    Generate a random polynomial of degree n and coefficients modulo some prime p.
+    Functie die een willekeurig polynoom van graad n met coefficiënten modulo p genereert.
     """
     ModP = IntegersModP(mod)
     Polynomial = PolynomialSpaceOver(ModP)
@@ -16,6 +16,9 @@ def genFieldPol(mod, degree):
         return randomMonicPolynomial
 
 def genCurvePoint(kromme):
+    """
+    Functie die een willekeurig punt op een elliptische kromme over F_p^n genereert.
+    """
     mod=kromme.a.prime
     degree=kromme.a.degree
     CurrentField=kromme.a.__class__
@@ -30,10 +33,13 @@ def genCurvePoint(kromme):
             ypunt=CurrentField(ylist)
             if ypunt**2==kwadraat:
                 return Punt(kromme, xpunt, ypunt)
-        if counter>100:
+        if counter>200:
             raise Exception("Maximum number of iterations exceeded!")
 
 def prime_factors(n):
+    """
+    Functie die een getal in zijn priemfactoren ontbindt.
+    """
     i = 2
     factors = []
     while i * i <= n:
@@ -46,12 +52,16 @@ def prime_factors(n):
         factors.append(n)
     return factors
 
-def lcm(a,b): 
+def lcm(a,b):
+    """
+    Functie die het least common multiple van twee getallen geeft.
+    """
     return abs(a * b) / fractions.gcd(a,b) if a and b else 0
 
 def BabyStepGiantStepOnce(kromme):
     """
-    Rudimentaire versie van Baby-Step-Giant-Step algoritme.
+    Dit algoritme voert het Baby-Step-Giant-Step algoritme één keer uit. Het algoritme begint namelijk met een willekeurig punt en gaat dan verder. Deze functie doet alle stappen
+    voor één punt een keer.
     """
     mod=kromme.a.prime
     degree=kromme.a.degree
@@ -107,12 +117,18 @@ def BabyStepGiantStepOnce(kromme):
         return N
 
 def BabyStepGiantStep(kromme):
+    """
+    Het Baby-Step-Giant-Step algoritme.BSGScheck
+    """
     while True:
         resultaat = BabyStepGiantStepOnce(kromme)
         if isinstance(resultaat, int):
             return resultaat
 
 def BSGScheck(kromme):
+    """
+    Een algoritme dat met brute-force de cardinaliteit van de elliptische kromme over F_p^k berekent om het BSGS algoritme te controleren. Merk op dat dit al gauw veel tijd kost.
+    """
     mod=kromme.a.prime
     degree=kromme.a.degree
     CurrentField=kromme.a.__class__

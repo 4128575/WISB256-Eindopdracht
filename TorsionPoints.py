@@ -76,6 +76,9 @@ def FindTorsionPoints(kromme):
     return torsiepunten
 
 def GroupStructure(kromme, torsiepuntlijst=None):
+    """
+    Functie die de groepsstructuur van de torsiegroep geeft.
+    """
     if torsiepuntlijst==None:
         torsiepunten=FindTorsionPoints(kromme)
     else:

@@ -3,6 +3,9 @@ import fractions
 frac = fractions.Fraction
 
 class ElliptischeKromme(object):
+    """
+    De Elliptischekromme class definieert een elliptische krommen en controleert of de meegegeven waarden kloppen.
+    """
     def __init__(self, a, b):
         self.a = a
         self.b = b
@@ -15,6 +18,9 @@ class ElliptischeKromme(object):
         return 'y^2=x^3+%sx+%s' % (self.a,self.b)
 
 class Punt(object):
+    """
+    De punt class definieert punten op de elliptischekromme met het algoritme voor optelling en dergelijke.
+    """
     def __init__(self, kromme, x, y):
         self.kromme = kromme # the curve containing this point
         self.x = x
@@ -61,20 +67,15 @@ class Punt(object):
                 return InfPoint(self.kromme)
             else:
                 binarylijst=bin(n)[2:]
-#The number n in binary
                 lengte=len(binarylijst)
                 binpuntlijst=[self]+[0]*(lengte-1)
-#We create a list which starts with the point we are multiplying and has zeros everywhere else.
                 for i in range(1,lengte):
                     binpuntlijst[i]=binpuntlijst[i-1]+binpuntlijst[i-1]
-#We now have a list that contains P, 2P, 4P, 8P,... 
                 binarylijst2=binarylijst[::-1]
-#We reverse our binary number to match the positions of P, 2P etc. in our list.
                 returnpunt=InfPoint(self.kromme)
                 for k in range(lengte):
                     if binarylijst2[k]=='1':
                         returnpunt=returnpunt+binpuntlijst[k]
-#We perform the calculation a_0*P+a_1*2P+a_2*4P+a_3*8_+... so that we get n*P.
                 return returnpunt
                 
     def __rmul__(self, n):

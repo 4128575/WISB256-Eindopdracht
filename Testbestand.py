@@ -154,7 +154,7 @@ P3 = Punt(curve2, x3, y3)
 print(P3,'    ',P3*4,'    ',P3*24,'   ',P3*10000)
 
 print("""
-Over Q kunnen we de punten met eindige orden (torsiepunten) bepalen en de groepsstructuur weergeven.
+Over Q kunnen we de punten met eindige orde (torsiepunten) bepalen en de groepsstructuur weergeven.
 """)
 testkromme = ElliptischeKromme(-43,166)
 a=FindTorsionPoints(testkromme)
@@ -192,7 +192,7 @@ for i in range(len(a)):
 print(GroupStructure(testkromme),"\n")
 
 print("""
-Tenslotte hebben we het Baby-Step-Giant-Step algoritme geïmplementeerd over F_(p^k). Hiermee vinden we de Cardinaliteit van Elliptische Krommen over F_(p^k). Dit berekenen duurt best lang,
+Tenslotte hebben we het Baby-Step-Giant-Step algoritme geïmplementeerd over F_(p^k). Hiermee vinden we de cardinaliteit van Elliptische Krommen over F_(p^k). Dit berekenen duurt best lang,
 hoewel niet zolang als puur brute-forcen, omdat er telkens een willekeurig punt gevonden moet worden en dit gaat deels op een bruteforce manier. Bijgeleverd is ook een "BSGS" checkalgoritme.
 Hiermee vinden we domweg de cardinaliteit van de kromme door alle mogelijke combinaties van punten af te gaan. Hiermee kan je controleren dat het algoritme inderdaad functioneert.
 De code staat op het moment uit omdat het erg lang duurt (zeker de laatste kromme). Ter informatie, voor de eerste kromme geeft het check algoritme 27, de tweede 108 en de derde 675.
@@ -213,4 +213,4 @@ resultaat2 = BabyStepGiantStep(kromme2)
 print(resultaat)
 print(resultaat2)
 #print(resultaat3)
-print(BSGScheck(kromme),BSGScheck(kromme2))
+#print(BSGScheck(kromme),BSGScheck(kromme2))
