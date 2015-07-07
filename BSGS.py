@@ -65,9 +65,7 @@ def BabyStepGiantStepOnce(kromme):
     """
     mod=kromme.a.prime
     degree=kromme.a.degree
-#    CurrentField=kromme.a.__class__
     randompunt = genCurvePoint(kromme)
-#    kwadraat=kromme.a*xpunt+xpunt**3+kromme.b
     m=math.ceil((mod**degree)**(1/4))
     puntlijst=[]
     for j in range(m):
