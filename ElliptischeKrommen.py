@@ -22,7 +22,7 @@ class Punt(object):
     De punt class definieert punten op de elliptischekromme met het algoritme voor optelling en dergelijke.
     """
     def __init__(self, kromme, x, y):
-        self.kromme = kromme # the curve containing this point
+        self.kromme = kromme
         self.x = x
         self.y = y
         if x**3+self.kromme.a*x+self.kromme.b-y**2>1.0e-5:
